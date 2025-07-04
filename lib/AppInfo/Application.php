@@ -42,20 +42,53 @@ class Application extends App implements IBootstrap {
         $context->registerEventListener(BeforeTemplateRenderedEvent::class, LoadAdditionalScriptsListener::class);
         
         // Initialize L10N first for Nextcloud 31 compatibility
-        \OC::$server->getL10NFactory()->get('samewindow');
+        \OC::$server->getL10NFactory()->get(self::APP_ID);
         
-        // Register scripts with proper ordering
-        // First load the translation script
-        \OCP\Util::addScript(self::APP_ID, 'l10n/translations', '');
+        // Load scripts in correct order
+        // First load the translations script without subdirectory path
+        \OCP\Util::addScript(self::APP_ID, 'translations');
         
         // Then load the initialization script
-        \OCP\Util::addScript(self::APP_ID, 'samewindow-init', '');
+        \OCP\Util::addScript(self::APP_ID, 'samewindow-init');
         
         // Finally load the main app script
-        \OCP\Util::addScript(self::APP_ID, 'samewindow', '');
+        \OCP\Util::addScript(self::APP_ID, 'samewindow');
     }
 
     public function boot(IBootContext $context): void {
-        // Boot logic if needed
+        // Initialize translations early to avoid missing translation errors
+        $this->initTranslations();
+    }
+    
+    /**
+     * Initialize app translations
+     */
+    private function initTranslations(): void {
+        // Make sure translations are properly initialized for Nextcloud 31
+        try {
+            // Get the language factory
+            $l10nFactory = \OC::$server->getL10NFactory();
+            
+            // Pre-load app translations
+            $l10n = $l10nFactory->get(self::APP_ID);
+            
+            // Force load the translations for this app
+            $l10nDir = \OC::$SERVERROOT . '/apps/' . self::APP_ID . '/l10n/';
+            $l10nFile = $l10nDir . $l10n->getLanguageCode() . '.json';
+            
+            if (!file_exists($l10nFile)) {
+                $l10nFile = $l10nDir . 'en.json';
+            }
+            
+            if (file_exists($l10nFile)) {
+                $translations = json_decode(file_get_contents($l10nFile), true);
+                if (isset($translations['translations'])) {
+                    // The translations are already properly formatted, no need to do anything else
+                }
+            }
+        } catch (\Exception $e) {
+            // Log any errors but continue
+            \OCP\Util::writeLog(self::APP_ID, 'Error initializing translations: ' . $e->getMessage(), \OCP\ILogger::WARN);
+        }
     }
 }

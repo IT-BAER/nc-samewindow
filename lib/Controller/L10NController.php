@@ -58,8 +58,8 @@ class L10NController extends Controller {
         
         if (file_exists($jsonFile)) {
             $translations = json_decode(file_get_contents($jsonFile), true);
-            if ($translations) {
-                return new JSONResponse($translations);
+            if ($translations && isset($translations['translations'])) {
+                return new JSONResponse($translations['translations']);
             }
         }
         
