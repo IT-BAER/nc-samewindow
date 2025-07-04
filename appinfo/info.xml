@@ -1,6 +1,6 @@
-﻿<?xml version=\"1.0\"?>
-<info xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\"
-      xsi:noNamespaceSchemaLocation=\"https://apps.nextcloud.com/schema/apps/info.xsd\">
+<?xml version="1.0"?>
+<info xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+      xsi:noNamespaceSchemaLocation="https://apps.nextcloud.com/schema/apps/info.xsd">
     <id>samewindow</id>
     <name>Same Window</name>
     <summary>Prevent links on frontend widgets from opening in new windows/tabs</summary>
@@ -15,19 +15,19 @@ Features:
     ]]></description>
     <version>0.1.0</version>
     <licence>agpl</licence>
-    <author mail=\"developer@example.com\">Developer</author>
+    <author mail="developer@example.com">Developer</author>
     <namespace>SameWindow</namespace>
     <category>tools</category>
     <category>customization</category>
     <website>https://github.com/nextcloud/samewindow</website>
     <bugs>https://github.com/nextcloud/samewindow/issues</bugs>
-    <repository type=\"git\">https://github.com/nextcloud/samewindow.git</repository>
+    <repository type="git">https://github.com/nextcloud/samewindow.git</repository>
     <screenshot>https://raw.githubusercontent.com/nextcloud/samewindow/main/screenshots/screenshot1.png</screenshot>
     <dependencies>
-        <nextcloud min-version=\"28\" max-version=\"30\"/>
+        <nextcloud min-version="28" max-version="30"/>
     </dependencies>
     <settings>
-        <admin>OCA\\SameWindow\\Settings\\Admin</admin>
-        <admin-section>OCA\\SameWindow\\Settings\\AdminSection</admin-section>
+        <admin>OCA\SameWindow\Settings\Admin</admin>
+        <admin-section>OCA\SameWindow\Settings\AdminSection</admin-section>
     </settings>
 </info>

@@ -43,7 +43,7 @@ class Admin implements ISettings {
             'exclude_selectors' => $this->config->getAppValue(Application::APP_ID, 'exclude_selectors', '.external-link, .new-window-link'),
         ];
 
-        return new TemplateResponse(Application::APP_ID, 'admin', $parameters);
+        return new TemplateResponse(Application::APP_ID, 'settings/admin', $parameters);
     }
 
     public function getSection(): string {
