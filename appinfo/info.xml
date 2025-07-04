@@ -12,6 +12,20 @@ Features:
 - Supports dynamic content through mutation observers
 - Compatible with the latest Nextcloud versions
     ]]></description>
+    <version>1.0.0</version>1.0"?>
+<info xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+      xsi:noNamespaceSchemaLocation="https://apps.nextcloud.com/schema/apps/info.xsd">
+    <id>samewindow</id>
+    <name>Same Window</name>
+    <summary>Prevent links on frontend widgets from opening in new windows/tabs</summary>
+    <description><![CDATA[
+The Same Window app ensures that all links on frontend widgets open in the same window/tab instead of opening new windows or tabs in the browser. This provides a more seamless user experience by keeping users within the current Nextcloud interface.
+
+Features:
+- Automatically modifies links to open in the same window
+- Supports dynamic content through mutation observers
+- Compatible with the latest Nextcloud versions
+    ]]></description>
     <version>0.1.0</version>
     <licence>agpl</licence>
     <author mail="developer@example.com">Developer</author>

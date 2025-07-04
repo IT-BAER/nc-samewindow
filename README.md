@@ -9,9 +9,8 @@ The Same Window app automatically modifies links on frontend widgets to open in 
 ## Features
 
 - **Automatic Link Modification**: Automatically removes `target="_blank"` and `target="_new"` attributes from links
-- **Configurable Selectors**: Define which links should be modified using CSS selectors
-- **Exclude Functionality**: Specify links that should be excluded from modification
-- **Admin Settings**: Easy-to-use admin interface for configuration
+- **Widget-Only Processing**: Only affects links within content widgets, not navigation or headers
+- **Smart Link Handling**: Intelligently processes only links that should be modified
 - **Visual Feedback**: Optional visual indicators for processed links
 - **Dynamic Content Support**: Handles dynamically loaded content through mutation observers
 
@@ -20,21 +19,12 @@ The Same Window app automatically modifies links on frontend widgets to open in 
 1. Download the latest release from the [releases page](https://github.com/nextcloud/samewindow/releases)
 2. Extract the archive to your Nextcloud apps directory
 3. Enable the app through the Nextcloud admin interface
-4. Configure the settings in the admin panel
-
-## Configuration
-
-The app can be configured through the admin settings:
-
-- **Enable/Disable**: Toggle the functionality on/off
-- **Target Selectors**: CSS selectors for links that should be modified (default: `a[target="_blank"], a[target="_new"]`)
-- **Exclude Selectors**: CSS selectors for links that should be excluded from modification (default: `.external-link, .new-window-link`)
 
 ## How it Works
 
 1. The app loads on all user pages (not login or public pages)
-2. It scans for links matching the configured target selectors
-3. Removes the `target` attribute from matching links (unless they match exclude selectors)
+2. It scans for links with target="_blank" or target="_new" within widgets
+3. Removes the `target` attribute from matching links (unless they are in navigation or headers)
 4. Adds event listeners to handle click events appropriately
 5. Uses mutation observers to handle dynamically added content
 
@@ -77,10 +67,16 @@ This project is licensed under the AGPL-3.0 License - see the [LICENSE](LICENSE)
 
 ## Changelog
 
+### v1.0.0
+- First stable release
+- Widget-focused link modification
+- Improved link detection and processing
+- Smart exclusion of navigation and header elements
+- Better performance and reliability
+
 ### v0.1.0
 - Initial release
 - Basic link modification functionality
-- Admin settings interface
 - Dynamic content support
 - User override functionality
 

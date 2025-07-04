@@ -24,14 +24,12 @@ declare(strict_types=1);
 
 namespace OCA\SameWindow\AppInfo;
 
-use OCA\SameWindow\Controller\ConfigController;
 use OCA\SameWindow\Listener\LoadAdditionalScriptsListener;
 use OCP\AppFramework\App;
 use OCP\AppFramework\Bootstrap\IBootContext;
 use OCP\AppFramework\Bootstrap\IBootstrap;
 use OCP\AppFramework\Bootstrap\IRegistrationContext;
 use OCP\AppFramework\Http\Events\BeforeTemplateRenderedEvent;
-use OCP\IRequest;
 
 class Application extends App implements IBootstrap {
     public const APP_ID = 'samewindow';
@@ -43,14 +41,6 @@ class Application extends App implements IBootstrap {
     public function register(IRegistrationContext $context): void {
         // Register event listener for scripts
         $context->registerEventListener(BeforeTemplateRenderedEvent::class, LoadAdditionalScriptsListener::class);
-
-        // Register config controller for API access
-        $context->registerService('OCA\SameWindow\Controller\ConfigController', function($c) {
-            return new ConfigController(
-                $c->get('AppName'),
-                $c->get(IRequest::class)
-            );
-        });
 
         // Load scripts - do this here to ensure it's loaded after the page is rendered
         \OCP\Util::addScript(self::APP_ID, 'samewindow-main');

@@ -28,7 +28,7 @@
     }
 
     // Add debug logging to help diagnose issues
-    const DEBUG = false;
+    const DEBUG = false; // Set to false for production
     function logDebug(message, ...args) {
         if (DEBUG) {
             console.log(`SameWindow DEBUG: ${message}`, ...args);
