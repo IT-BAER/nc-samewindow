@@ -17,22 +17,25 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  *
  */
-OC.L10N.register(
-    'samewindow',
-    {
-        "Same Window": "Same Window",
-        "Prevent links on frontend widgets from opening in new windows/tabs": "Prevent links on frontend widgets from opening in new windows/tabs",
-        "Configure how links should behave on frontend widgets": "Configure how links should behave on frontend widgets",
-        "Enable Same Window functionality": "Enable Same Window functionality",
-        "When enabled, links on frontend widgets will open in the same window instead of new tabs": "When enabled, links on frontend widgets will open in the same window instead of new tabs",
-        "Target Selectors": "Target Selectors",
-        "CSS selectors for links that should be modified (comma-separated)": "CSS selectors for links that should be modified (comma-separated)",
-        "Exclude Selectors": "Exclude Selectors",
-        "CSS selectors for links that should be excluded from modification (comma-separated)": "CSS selectors for links that should be excluded from modification (comma-separated)",
-        "Save": "Save",
-        "Saving...": "Saving...",
-        "Settings saved successfully": "Settings saved successfully",
-        "Error saving settings": "Error saving settings"
-    },
-    ""
-);
+
+/* These need to be separate window-scoped variables for Nextcloud 31 */
+window.samewindowTranslations = {
+    "Same Window": "Same Window",
+    "Prevent links on frontend widgets from opening in new windows/tabs": "Prevent links on frontend widgets from opening in new windows/tabs",
+    "Configure how links should behave on frontend widgets": "Configure how links should behave on frontend widgets",
+    "Enable Same Window functionality": "Enable Same Window functionality",
+    "When enabled, links on frontend widgets will open in the same window instead of new tabs": "When enabled, links on frontend widgets will open in the same window instead of new tabs",
+    "Target Selectors": "Target Selectors",
+    "CSS selectors for links that should be modified (comma-separated)": "CSS selectors for links that should be modified (comma-separated)",
+    "Exclude Selectors": "Exclude Selectors",
+    "CSS selectors for links that should be excluded from modification (comma-separated)": "CSS selectors for links that should be excluded from modification (comma-separated)",
+    "Save": "Save",
+    "Saving...": "Saving...",
+    "Settings saved successfully": "Settings saved successfully",
+    "Error saving settings": "Error saving settings"
+};
+
+/* Register translations with OC.L10N */
+if (typeof OC !== 'undefined' && OC.L10N) {
+    OC.L10N.register('samewindow', window.samewindowTranslations);
+}

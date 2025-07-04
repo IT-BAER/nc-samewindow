@@ -11,4 +11,9 @@
         <verb>GET</verb>
         <url>/config</url>
     </route>
+    <route>
+        <id>l10n#getTranslations</id>
+        <verb>GET</verb>
+        <url>/l10n</url>
+    </route>
 </routes>

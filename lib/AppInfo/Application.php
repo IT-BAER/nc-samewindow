@@ -41,9 +41,17 @@ class Application extends App implements IBootstrap {
     public function register(IRegistrationContext $context): void {
         $context->registerEventListener(BeforeTemplateRenderedEvent::class, LoadAdditionalScriptsListener::class);
         
-        // Register JavaScript translations
+        // Initialize L10N first for Nextcloud 31 compatibility
         \OC::$server->getL10NFactory()->get('samewindow');
-        \OCP\Util::addScript('samewindow', 'l10n/translations');
+        
+        // Load translations - must be loaded before any other app scripts
+        \OCP\Util::addScript(self::APP_ID, 'l10n/translations', ['initial']);
+        
+        // Load app initialization script
+        \OCP\Util::addScript(self::APP_ID, 'samewindow-init');
+        
+        // Register main app script
+        \OCP\Util::addScript(self::APP_ID, 'samewindow');
     }
 
     public function boot(IBootContext $context): void {
