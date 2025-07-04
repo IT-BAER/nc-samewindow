@@ -1,4 +1,5 @@
 # Nextcloud App .gitignore
+.nextcloud/
 
 # GitHub related files
 .github/
