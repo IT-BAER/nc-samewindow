@@ -40,6 +40,10 @@ class Application extends App implements IBootstrap {
 
     public function register(IRegistrationContext $context): void {
         $context->registerEventListener(BeforeTemplateRenderedEvent::class, LoadAdditionalScriptsListener::class);
+        
+        // Register JavaScript translations
+        \OC::$server->getL10NFactory()->get('samewindow');
+        \OCP\Util::addScript('samewindow', 'l10n/translations');
     }
 
     public function boot(IBootContext $context): void {
