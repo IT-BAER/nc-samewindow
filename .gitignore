@@ -1,0 +1,62 @@
+# Nextcloud App .gitignore
+
+# Composer dependencies
+/vendor/
+/composer.lock
+
+# Node dependencies
+/node_modules/
+/js/node_modules/
+/package-lock.json
+/js/package-lock.json
+/npm-debug.log
+
+# Build files
+/build/
+/js/*.js.map
+/js/*.min.js
+/css/*.min.css
+
+# IDE files
+.idea/
+.vscode/
+*.swp
+*.swo
+*~
+
+# OS generated files
+.DS_Store
+.DS_Store?
+._*
+.Spotlight-V100
+.Trashes
+ehthumbs.db
+Thumbs.db
+
+# Testing related files
+/coverage/
+.phpunit.result.cache
+.phpunit.cache
+/tests/clover.xml
+/tests/output
+/cypress/videos/
+/cypress/screenshots/
+
+# Compiled translation files
+/translationfiles/
+/l10n/*.js
+/l10n/*.json
+!/l10n/en.json
+/l10n/l10n.pl
+
+# Temporary files
+/tmp/
+*.tmp
+*.bak
+
+# Logs
+*.log
+
+# Nextcloud specific
+/appstore/
+.php_cs.cache
