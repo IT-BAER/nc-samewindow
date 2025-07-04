@@ -25,9 +25,8 @@ declare(strict_types=1);
 namespace OCA\SameWindow\Controller;
 
 use OCA\SameWindow\AppInfo\Application;
-use OCP\AppFramework\OCSController;
 use OCP\AppFramework\Http;
-use OCP\AppFramework\Http\JSONResponse;
+use OCP\AppFramework\OCS\OCSController;
 use OCP\AppFramework\Http\DataResponse;
 use OCP\IRequest;
 use OCP\IL10N;

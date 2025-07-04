@@ -25,8 +25,8 @@ declare(strict_types=1);
 namespace OCA\SameWindow\Controller;
 
 use OCA\SameWindow\AppInfo\Application;
-use OCP\AppFramework\OCSController;
-use OCP\AppFramework\Http\JSONResponse;
+use OCP\AppFramework\Http;
+use OCP\AppFramework\OCS\OCSController;
 use OCP\AppFramework\Http\DataResponse;
 use OCP\IConfig;
 use OCP\IRequest;
@@ -45,19 +45,22 @@ class ConfigController extends OCSController {
      * @NoAdminRequired
      * @CORS
      * @NoCSRFRequired
+     * @PublicPage
      */
     public function getConfig(): DataResponse {
-        return new DataResponse([
+        $data = [
             'enabled' => $this->config->getAppValue(Application::APP_ID, 'enabled', 'yes') === 'yes',
             'target_selectors' => $this->config->getAppValue(Application::APP_ID, 'target_selectors', 'a[target="_blank"], a[target="_new"]'),
             'exclude_selectors' => $this->config->getAppValue(Application::APP_ID, 'exclude_selectors', '.external-link, .new-window-link'),
-        ]);
+        ];
+        return new DataResponse($data);
     }
 
     /**
      * @NoAdminRequired
      * @CORS
      * @NoCSRFRequired
+     * @PublicPage
      */
     public function setConfig(bool $enabled = true, string $targetSelectors = '', string $excludeSelectors = ''): DataResponse {
         $this->config->setAppValue(Application::APP_ID, 'enabled', $enabled ? 'yes' : 'no');

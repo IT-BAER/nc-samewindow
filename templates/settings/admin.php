@@ -53,7 +53,10 @@ document.addEventListener('DOMContentLoaded', function() {
         // Add debug logging
         console.log('Saving SameWindow settings:', data);
         
-        fetch(OC.linkToOCS('/apps/samewindow/api/v1/config', 2), {
+        // First try the OCS API endpoint
+        const apiUrl = OC.generateUrl('/ocs/v2.php/apps/samewindow/api/v1/config') + '?format=json';
+        
+        fetch(apiUrl, {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',
@@ -78,12 +81,36 @@ document.addEventListener('DOMContentLoaded', function() {
             }
         })
         .catch(error => {
-            console.error('Error:', error);
-            OC.Notification.showTemporary('<?php p($l->t('Error saving settings')); ?>');
-        })
-        .finally(() => {
-            submitButton.disabled = false;
-            submitButton.textContent = '<?php p($l->t('Save')); ?>';
+            console.warn('Error saving via OCS API:', error);
+            
+            // Fallback to regular API
+            return fetch(OC.generateUrl('/apps/samewindow/config'), {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'requesttoken': OC.requestToken,
+                    'Accept': 'application/json'
+                },
+                body: JSON.stringify(data)
+            })
+            .then(response => {
+                if (!response.ok) {
+                    throw new Error('Server returned ' + response.status);
+                }
+                return response.json();
+            })
+            .then(fallbackData => {
+                console.log('Settings saved response (fallback):', fallbackData);
+                OC.Notification.showTemporary('<?php p($l->t('Settings saved successfully')); ?>');
+            })
+            .catch(fallbackError => {
+                console.error('Error saving via fallback API:', fallbackError);
+                OC.Notification.showTemporary('<?php p($l->t('Error saving settings')); ?>');
+            })
+            .finally(() => {
+                submitButton.disabled = false;
+                submitButton.textContent = '<?php p($l->t('Save')); ?>';
+            });
         });
     });
 });

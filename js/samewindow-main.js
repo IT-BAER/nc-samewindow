@@ -29,7 +29,10 @@
 
     // Load configuration from server
     function loadConfig() {
-        return fetch(OC.linkToOCS('/apps/samewindow/api/v1/config', 2), {
+        // Try the OCS API endpoint
+        const apiUrl = OC.generateUrl('/ocs/v2.php/apps/samewindow/api/v1/config') + '?format=json';
+        
+        return fetch(apiUrl, {
             method: 'GET',
             headers: {
                 'requesttoken': OC.requestToken,
@@ -56,9 +59,36 @@
             return config;
         })
         .catch(error => {
-            console.error('SameWindow: Error loading config:', error);
-            // Continue with default config
-            return config;
+            console.warn('SameWindow: Error loading config via OCS API:', error);
+            
+            // Fallback to regular API
+            return fetch(OC.generateUrl('/apps/samewindow/config'), {
+                method: 'GET',
+                headers: {
+                    'requesttoken': OC.requestToken,
+                    'Accept': 'application/json'
+                }
+            })
+            .then(response => {
+                if (!response.ok) {
+                    throw new Error('Server returned ' + response.status);
+                }
+                return response.json();
+            })
+            .then(data => {
+                console.debug('SameWindow: Loaded configuration via fallback API:', data);
+                config = {
+                    enabled: data.enabled || false,
+                    targetSelectors: data.target_selectors || 'a[target="_blank"], a[target="_new"]',
+                    excludeSelectors: data.exclude_selectors || '.external-link, .new-window-link'
+                };
+                return config;
+            })
+            .catch(fallbackError => {
+                console.error('SameWindow: Error loading config via fallback API:', fallbackError);
+                // Continue with default config
+                return config;
+            });
         });
     }
 

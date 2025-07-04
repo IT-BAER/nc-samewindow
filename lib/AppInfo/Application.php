@@ -44,8 +44,8 @@ class Application extends App implements IBootstrap {
     public function register(IRegistrationContext $context): void {
         $context->registerEventListener(BeforeTemplateRenderedEvent::class, LoadAdditionalScriptsListener::class);
         
-        // Register controllers
-        $context->registerService('ConfigController', function($c) {
+        // Register controllers as OCS controllers
+        $context->registerService('OCA\SameWindow\Controller\ConfigController', function($c) {
             return new \OCA\SameWindow\Controller\ConfigController(
                 self::APP_ID,
                 $c->get(IRequest::class),
@@ -53,7 +53,7 @@ class Application extends App implements IBootstrap {
             );
         });
         
-        $context->registerService('L10NController', function($c) {
+        $context->registerService('OCA\SameWindow\Controller\L10NController', function($c) {
             return new \OCA\SameWindow\Controller\L10NController(
                 self::APP_ID,
                 $c->get(IRequest::class),
