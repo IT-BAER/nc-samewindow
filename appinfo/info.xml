@@ -1,28 +1,38 @@
 <?xml version="1.0"?>
-<info xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-      xsi:noNamespaceSchemaLocation="https://apps.nextcloud.com/schema/apps/info.xsd">
+<info xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="https://apps.nextcloud.com/schema/apps/info.xsd">
     <id>samewindow</id>
     <name>Same Window</name>
     <summary>Prevent links on frontend widgets from opening in new windows/tabs</summary>
-    <description><![CDATA[
-The Same Window app ensures that all links on frontend widgets open in the same window/tab instead of opening new windows or tabs in the browser. This provides a more seamless user experience by keeping users within the current Nextcloud interface.
+    <description><![CDATA[**🔗 Same Window for Nextcloud**
 
-Features:
-- Automatically modifies links to open in the same window
-- Supports dynamic content through mutation observers
-- Compatible with the latest Nextcloud versions
+This app ensures that all links on frontend widgets open in the same window/tab instead of opening new windows or tabs in the browser. This provides a more seamless user experience by keeping users within the current Nextcloud interface.
+
+## ✨ Features
+
+- **🔗 Automatic link modification** - Converts all widget links to open in the same window
+- **⌨️ Modifier key support** - Ctrl/Cmd/Shift+click and middle-click still open new tabs/windows
+- **🎯 Widget-only targeting** - Only affects links within widgets, not navigation elements
+- **⚡ Dynamic content support** - Works with content loaded via AJAX through mutation observers
+- **🚫 No configuration required** - Works out of the box with no admin settings needed
+
+## 🛠️ How it Works
+
+The app automatically detects links with `target="_blank"` or `target="_new"` attributes within widget areas and modifies their behavior to open in the same window. Users can still override this behavior using:
+- **Ctrl+click** (Cmd+click on Mac) - Opens in new tab
+- **Shift+click** - Opens in new window
+- **Middle-click** - Opens in new tab
+
+## 💻 Compatibility
+- Nextcloud 28, 29, 30 & 31
     ]]></description>
-    <version>1.0.1</version>
+    <version>1.0.0</version>
     <licence>agpl</licence>
     <author mail="developer@example.com">Developer</author>
     <namespace>SameWindow</namespace>
     <category>tools</category>
-    <category>customization</category>
-    <website>https://github.com/nextcloud/samewindow</website>
     <bugs>https://github.com/nextcloud/samewindow/issues</bugs>
-    <repository type="git">https://github.com/nextcloud/samewindow.git</repository>
-    <screenshot>https://raw.githubusercontent.com/nextcloud/samewindow/main/screenshots/screenshot1.png</screenshot>
+	<screenshot>https://raw.githubusercontent.com/nextcloud/samewindow/main/screenshots/screenshot1.png</screenshot>
     <dependencies>
-        <nextcloud min-version="28" max-version="31"/>
+        <nextcloud min-version="28" max-version="31" />
     </dependencies>
 </info>
