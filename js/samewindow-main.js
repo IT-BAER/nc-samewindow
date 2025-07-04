@@ -30,62 +30,70 @@
     // App is always enabled with default configuration
     const config = {
         enabled: true,
+        // These are the widget selectors in Nextcloud
+        widgetSelectors: '.widget, .widgets, .widget-container, .dashboard-widget, .app-content .content, .app-content-list, .app-content-detail, #app-content',
         targetSelectors: 'a[target="_blank"], a[target="_new"]',
-        excludeSelectors: '.external-link, .new-window-link'
+        excludeSelectors: '.external-link, .new-window-link, .navigation, #navigation, #app-navigation, .app-navigation, .header-right, header, #header, .header'
     };
 
     // Function to modify links
     function modifyLinks() {
         try {
-            // Find all links that match the target selectors
-            const targetLinks = document.querySelectorAll(config.targetSelectors);
+            // First, find all widget containers
+            const widgetContainers = document.querySelectorAll(config.widgetSelectors);
             
-            targetLinks.forEach(link => {
-                // Skip if the link matches exclude selectors
-                if (config.excludeSelectors && link.matches(config.excludeSelectors)) {
-                    return;
-                }
+            // Process each widget container
+            widgetContainers.forEach(container => {
+                // Find links with target="_blank" or target="_new" inside the container
+                const targetLinks = container.querySelectorAll(config.targetSelectors);
+                
+                targetLinks.forEach(link => {
+                    // Skip if the link matches exclude selectors
+                    if (config.excludeSelectors && link.closest(config.excludeSelectors)) {
+                        return;
+                    }
 
-                // Skip if the link is already processed
-                if (link.hasAttribute('data-samewindow-processed')) {
-                    return;
-                }
+                    // Skip if the link is already processed
+                    if (link.hasAttribute('data-samewindow-processed')) {
+                        return;
+                    }
 
-                // Mark as processed
-                link.setAttribute('data-samewindow-processed', 'true');
+                    // Mark as processed
+                    link.setAttribute('data-samewindow-processed', 'true');
 
-                // Remove target attributes that open new windows
-                if (link.hasAttribute('target')) {
-                    const target = link.getAttribute('target');
-                    if (target === '_blank' || target === '_new') {
-                        link.removeAttribute('target');
+                    // Remove target attributes that open new windows
+                    if (link.hasAttribute('target')) {
+                        const target = link.getAttribute('target');
+                        if (target === '_blank' || target === '_new') {
+                            link.removeAttribute('target');
+                            
+                            // Add a visual indicator that this link was modified
+                            link.setAttribute('title', 
+                                (link.getAttribute('title') || '') + 
+                                ' (Modified by SameWindow to open in same tab)'
+                            );
+                        }
+                    }
+
+                    // Also handle click events for any programmatic target="_blank" settings
+                    link.addEventListener('click', function(e) {
+                        // Prevent default if it would open in new window
+                        if (e.ctrlKey || e.metaKey || e.shiftKey) {
+                            // Allow user to override by holding Ctrl/Cmd/Shift
+                            return;
+                        }
                         
-                        // Add a visual indicator that this link was modified
-                        link.setAttribute('title', 
-                            (link.getAttribute('title') || '') + 
-                            ' (Modified by SameWindow to open in same tab)'
-                        );
-                    }
-                }
-
-                // Also handle click events for any programmatic target="_blank" settings
-                link.addEventListener('click', function(e) {
-                    // Prevent default if it would open in new window
-                    if (e.ctrlKey || e.metaKey || e.shiftKey) {
-                        // Allow user to override by holding Ctrl/Cmd/Shift
-                        return;
-                    }
-                    
-                    // For relative links, let them navigate normally
-                    if (link.getAttribute('href') && link.getAttribute('href').startsWith('#')) {
-                        return;
-                    }
-                    
-                    // For external links, navigate in same window
-                    if (link.href && link.href !== window.location.href) {
-                        window.location.href = link.href;
-                        e.preventDefault();
-                    }
+                        // For relative links, let them navigate normally
+                        if (link.getAttribute('href') && link.getAttribute('href').startsWith('#')) {
+                            return;
+                        }
+                        
+                        // For external links, navigate in same window
+                        if (link.href && link.href !== window.location.href) {
+                            window.location.href = link.href;
+                            e.preventDefault();
+                        }
+                    });
                 });
             });
         } catch (error) {
@@ -103,8 +111,11 @@
                     if (mutation.type === 'childList') {
                         mutation.addedNodes.forEach(function(node) {
                             if (node.nodeType === Node.ELEMENT_NODE) {
-                                // Check if the added node or its children contain links
-                                if (node.tagName === 'A' || node.querySelectorAll('a').length > 0) {
+                                // Check if the added node is or contains widgets
+                                if (node.matches && (
+                                    node.matches(config.widgetSelectors) || 
+                                    node.querySelectorAll(config.widgetSelectors).length > 0)
+                                ) {
                                     shouldProcess = true;
                                 }
                             }
