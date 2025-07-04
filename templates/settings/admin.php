@@ -50,17 +50,27 @@ document.addEventListener('DOMContentLoaded', function() {
         submitButton.disabled = true;
         submitButton.textContent = '<?php p($l->t('Saving...')); ?>';
         
+        // Add debug logging
+        console.log('Saving SameWindow settings:', data);
+        
         fetch(OC.generateUrl('/apps/samewindow/config'), {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',
-                'requesttoken': OC.requestToken
+                'requesttoken': OC.requestToken,
+                'Accept': 'application/json'
             },
             body: JSON.stringify(data)
         })
-        .then(response => response.json())
+        .then(response => {
+            if (!response.ok) {
+                throw new Error('Server returned ' + response.status);
+            }
+            return response.json();
+        })
         .then(data => {
-            if (data.success) {
+            console.log('Settings saved response:', data);
+            if (data && data.success) {
                 OC.Notification.showTemporary('<?php p($l->t('Settings saved successfully')); ?>');
             } else {
                 OC.Notification.showTemporary('<?php p($l->t('Error saving settings')); ?>');

@@ -35,10 +35,11 @@
 
 #samewindow .form-group input[type="text"] {
     width: 100%;
-    max-width: 400px;
+    max-width: 600px;
     padding: 8px;
     border: 1px solid var(--color-border);
     border-radius: 3px;
+    margin-bottom: 5px;
 }
 
 #samewindow .form-group input[type="checkbox"] {

@@ -41,6 +41,8 @@ class ConfigController extends Controller {
 
     /**
      * @NoAdminRequired
+     * @CORS
+     * @NoCSRFRequired
      */
     public function getConfig(): JSONResponse {
         return new JSONResponse([
@@ -52,15 +54,17 @@ class ConfigController extends Controller {
 
     /**
      * @NoAdminRequired
+     * @CORS
+     * @NoCSRFRequired
      */
-    public function setConfig(bool $enabled, string $targetSelectors = '', string $excludeSelectors = ''): JSONResponse {
+    public function setConfig(bool $enabled = true, string $targetSelectors = '', string $excludeSelectors = ''): JSONResponse {
         $this->config->setAppValue(Application::APP_ID, 'enabled', $enabled ? 'yes' : 'no');
         
-        if ($targetSelectors) {
+        if ($targetSelectors !== '') {
             $this->config->setAppValue(Application::APP_ID, 'target_selectors', $targetSelectors);
         }
         
-        if ($excludeSelectors) {
+        if ($excludeSelectors !== '') {
             $this->config->setAppValue(Application::APP_ID, 'exclude_selectors', $excludeSelectors);
         }
 

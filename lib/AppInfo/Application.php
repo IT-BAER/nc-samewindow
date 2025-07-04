@@ -44,6 +44,9 @@ class Application extends App implements IBootstrap {
         // Initialize L10N first for Nextcloud 31 compatibility
         \OC::$server->getL10NFactory()->get(self::APP_ID);
         
+        // Load styles first
+        \OCP\Util::addStyle(self::APP_ID, 'samewindow');
+        
         // Load scripts in correct order
         // First load the translations script without subdirectory path
         \OCP\Util::addScript(self::APP_ID, 'translations');

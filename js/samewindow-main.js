@@ -32,11 +32,18 @@
         return fetch(OC.generateUrl('/apps/samewindow/config'), {
             method: 'GET',
             headers: {
-                'requesttoken': OC.requestToken
+                'requesttoken': OC.requestToken,
+                'Accept': 'application/json'
             }
         })
-        .then(response => response.json())
+        .then(response => {
+            if (!response.ok) {
+                throw new Error('Server returned ' + response.status);
+            }
+            return response.json();
+        })
         .then(data => {
+            console.debug('SameWindow: Loaded configuration:', data);
             config = {
                 enabled: data.enabled || false,
                 targetSelectors: data.target_selectors || 'a[target="_blank"], a[target="_new"]',
@@ -46,6 +53,7 @@
         })
         .catch(error => {
             console.error('SameWindow: Error loading config:', error);
+            // Continue with default config
             return config;
         });
     }

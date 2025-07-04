@@ -29,7 +29,7 @@
         }
         
         // Ensure translations are registered if they're available
-        if (OC.L10N && window.samewindowTranslations && !OC.L10N.getTranslationData('samewindow')) {
+        if (OC.L10N && window.samewindowTranslations) {
             try {
                 OC.L10N.register('samewindow', window.samewindowTranslations);
                 console.debug('SameWindow translations registered from init');
