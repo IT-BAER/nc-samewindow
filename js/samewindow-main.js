@@ -60,7 +60,7 @@
             '.recommendation' // Recommendation widgets
         ],
         // Links that should be modified
-        targetSelectors: 'a[target="_blank"], a[target="_new"]',
+        targetSelectors: 'a[target="_blank"], a[target="_new"], a.recommendation, a[class*="recommendation"], a[data-v-51550203], a[data-v-53796b97], a[data-v-db766935]',
         // Areas to exclude (navigation, headers, etc.)
         excludeSelectors: [
             '.external-link', 
@@ -185,12 +185,15 @@
                 
                 // Check if this link has a target that opens new window
                 const target = link.getAttribute('target');
-                if (target === '_blank' || target === '_new') {
+                const isRecommendationLink = link.matches('.recommendation, [class*="recommendation"], [data-v-51550203], [data-v-53796b97], [data-v-db766935]');
+                
+                if (target === '_blank' || target === '_new' || isRecommendationLink) {
                     // Store the original target for restoration if needed
-                    link.setAttribute('data-original-target', target);
-                    
-                    // Remove the target attribute to prevent new window opening
-                    link.removeAttribute('target');
+                    if (target) {
+                        link.setAttribute('data-original-target', target);
+                        // Remove the target attribute to prevent new window opening
+                        link.removeAttribute('target');
+                    }
                     
                     // Add a visual indicator that this link was modified
                     const currentTitle = link.getAttribute('title') || '';
@@ -208,7 +211,8 @@
                             metaKey: e.metaKey,
                             shiftKey: e.shiftKey,
                             which: e.which,
-                            button: e.button
+                            button: e.button,
+                            isRecommendation: isRecommendationLink
                         });
                         
                         // If user uses modifier keys or middle click, open in new tab/window
@@ -218,23 +222,38 @@
                             // Prevent default behavior
                             e.preventDefault();
                             
+                            // For recommendation links without href, try to construct URL
+                            let url = link.href;
+                            if (isRecommendationLink && (!url || url === window.location.href)) {
+                                const titlePath = link.getAttribute('title');
+                                if (titlePath && titlePath.startsWith('/')) {
+                                    url = window.location.origin + '/index.php/f' + titlePath;
+                                }
+                            }
+                            
                             // Open in new tab/window based on modifier key
-                            if (e.shiftKey) {
-                                // Shift+click opens in new window
-                                logDebug('Opening in new window (Shift+click)');
-                                window.open(link.href, '_blank', 'noopener,noreferrer');
-                            } else {
-                                // Ctrl/Cmd+click or middle click opens in new tab
-                                logDebug('Opening in new tab (Ctrl/Cmd+click or middle click)');
-                                window.open(link.href, '_blank');
+                            if (url && url !== window.location.href) {
+                                if (e.shiftKey) {
+                                    // Shift+click opens in new window
+                                    logDebug('Opening in new window (Shift+click)');
+                                    window.open(url, '_blank', 'noopener,noreferrer');
+                                } else {
+                                    // Ctrl/Cmd+click or middle click opens in new tab
+                                    logDebug('Opening in new tab (Ctrl/Cmd+click or middle click)');
+                                    window.open(url, '_blank');
+                                }
                             }
                             return;
                         }
                         
-                        logDebug('Normal click, opening in same window');
-                        // For normal clicks, ensure target is removed (same window behavior)
-                        link.removeAttribute('target');
-                        // Let the browser handle the click naturally (same window)
+                        logDebug('Normal click, will open in same window');
+                        
+                        // For normal clicks on recommendation links, let Vue.js handle the navigation
+                        // For regular links, ensure target is removed (same window behavior)
+                        if (!isRecommendationLink) {
+                            link.removeAttribute('target');
+                        }
+                        // Let the browser/Vue handle the click naturally
                     });
                     
                     // Also handle mousedown event to catch middle clicks
