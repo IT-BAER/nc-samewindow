@@ -1,19 +1,22 @@
 <?xml version="1.0"?>
 <routes xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
         xsi:noNamespaceSchemaLocation="https://apps.nextcloud.com/schema/apps/routes.xsd">
-    <route>
-        <id>config#setConfig</id>
-        <verb>POST</verb>
-        <url>/config</url>
-    </route>
-    <route>
-        <id>config#getConfig</id>
-        <verb>GET</verb>
-        <url>/config</url>
-    </route>
-    <route>
-        <id>l10n#getTranslations</id>
-        <verb>GET</verb>
-        <url>/l10n</url>
-    </route>
+    <!-- These routes are accessible via OCS API with: OC.linkToOCS('/apps/samewindow/api/v1/config', 2) -->
+    <ocs>
+        <route name="config_get" url="/api/v1/config" verb="GET">
+            <action>OCA\SameWindow\Controller\ConfigController::getConfig</action>
+            <cors>true</cors>
+            <csrf>false</csrf>
+        </route>
+        <route name="config_set" url="/api/v1/config" verb="POST">
+            <action>OCA\SameWindow\Controller\ConfigController::setConfig</action>
+            <cors>true</cors>
+            <csrf>false</csrf>
+        </route>
+        <route name="l10n_get" url="/api/v1/l10n" verb="GET">
+            <action>OCA\SameWindow\Controller\L10NController::getTranslations</action>
+            <cors>true</cors>
+            <csrf>false</csrf>
+        </route>
+    </ocs>
 </routes>

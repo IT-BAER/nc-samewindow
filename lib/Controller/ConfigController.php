@@ -25,18 +25,20 @@ declare(strict_types=1);
 namespace OCA\SameWindow\Controller;
 
 use OCA\SameWindow\AppInfo\Application;
-use OCP\AppFramework\Controller;
+use OCP\AppFramework\OCSController;
 use OCP\AppFramework\Http\JSONResponse;
+use OCP\AppFramework\Http\DataResponse;
 use OCP\IConfig;
 use OCP\IRequest;
 
-class ConfigController extends Controller {
+class ConfigController extends OCSController {
 
     public function __construct(
+        string $appName,
         IRequest $request,
         private IConfig $config,
     ) {
-        parent::__construct(Application::APP_ID, $request);
+        parent::__construct($appName, $request);
     }
 
     /**
@@ -44,8 +46,8 @@ class ConfigController extends Controller {
      * @CORS
      * @NoCSRFRequired
      */
-    public function getConfig(): JSONResponse {
-        return new JSONResponse([
+    public function getConfig(): DataResponse {
+        return new DataResponse([
             'enabled' => $this->config->getAppValue(Application::APP_ID, 'enabled', 'yes') === 'yes',
             'target_selectors' => $this->config->getAppValue(Application::APP_ID, 'target_selectors', 'a[target="_blank"], a[target="_new"]'),
             'exclude_selectors' => $this->config->getAppValue(Application::APP_ID, 'exclude_selectors', '.external-link, .new-window-link'),
@@ -57,7 +59,7 @@ class ConfigController extends Controller {
      * @CORS
      * @NoCSRFRequired
      */
-    public function setConfig(bool $enabled = true, string $targetSelectors = '', string $excludeSelectors = ''): JSONResponse {
+    public function setConfig(bool $enabled = true, string $targetSelectors = '', string $excludeSelectors = ''): DataResponse {
         $this->config->setAppValue(Application::APP_ID, 'enabled', $enabled ? 'yes' : 'no');
         
         if ($targetSelectors !== '') {
@@ -68,6 +70,6 @@ class ConfigController extends Controller {
             $this->config->setAppValue(Application::APP_ID, 'exclude_selectors', $excludeSelectors);
         }
 
-        return new JSONResponse(['success' => true]);
+        return new DataResponse(['status' => 'success']);
     }
 }

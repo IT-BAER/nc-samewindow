@@ -53,12 +53,13 @@ document.addEventListener('DOMContentLoaded', function() {
         // Add debug logging
         console.log('Saving SameWindow settings:', data);
         
-        fetch(OC.generateUrl('/apps/samewindow/config'), {
+        fetch(OC.linkToOCS('/apps/samewindow/api/v1/config', 2), {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',
                 'requesttoken': OC.requestToken,
-                'Accept': 'application/json'
+                'Accept': 'application/json',
+                'OCS-APIRequest': 'true'
             },
             body: JSON.stringify(data)
         })
@@ -70,7 +71,7 @@ document.addEventListener('DOMContentLoaded', function() {
         })
         .then(data => {
             console.log('Settings saved response:', data);
-            if (data && data.success) {
+            if (data && data.ocs && data.ocs.meta && data.ocs.meta.status === 'ok') {
                 OC.Notification.showTemporary('<?php p($l->t('Settings saved successfully')); ?>');
             } else {
                 OC.Notification.showTemporary('<?php p($l->t('Error saving settings')); ?>');

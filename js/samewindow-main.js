@@ -29,11 +29,12 @@
 
     // Load configuration from server
     function loadConfig() {
-        return fetch(OC.generateUrl('/apps/samewindow/config'), {
+        return fetch(OC.linkToOCS('/apps/samewindow/api/v1/config', 2), {
             method: 'GET',
             headers: {
                 'requesttoken': OC.requestToken,
-                'Accept': 'application/json'
+                'Accept': 'application/json',
+                'OCS-APIRequest': 'true'
             }
         })
         .then(response => {
@@ -44,11 +45,14 @@
         })
         .then(data => {
             console.debug('SameWindow: Loaded configuration:', data);
-            config = {
-                enabled: data.enabled || false,
-                targetSelectors: data.target_selectors || 'a[target="_blank"], a[target="_new"]',
-                excludeSelectors: data.exclude_selectors || '.external-link, .new-window-link'
-            };
+            if (data && data.ocs && data.ocs.data) {
+                const configData = data.ocs.data;
+                config = {
+                    enabled: configData.enabled || false,
+                    targetSelectors: configData.target_selectors || 'a[target="_blank"], a[target="_new"]',
+                    excludeSelectors: configData.exclude_selectors || '.external-link, .new-window-link'
+                };
+            }
             return config;
         })
         .catch(error => {

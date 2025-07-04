@@ -30,6 +30,9 @@ use OCP\AppFramework\Bootstrap\IBootContext;
 use OCP\AppFramework\Bootstrap\IBootstrap;
 use OCP\AppFramework\Bootstrap\IRegistrationContext;
 use OCP\AppFramework\Http\Events\BeforeTemplateRenderedEvent;
+use OCP\IConfig;
+use OCP\IL10N;
+use OCP\IRequest;
 
 class Application extends App implements IBootstrap {
     public const APP_ID = 'samewindow';
@@ -40,6 +43,23 @@ class Application extends App implements IBootstrap {
 
     public function register(IRegistrationContext $context): void {
         $context->registerEventListener(BeforeTemplateRenderedEvent::class, LoadAdditionalScriptsListener::class);
+        
+        // Register controllers
+        $context->registerService('ConfigController', function($c) {
+            return new \OCA\SameWindow\Controller\ConfigController(
+                self::APP_ID,
+                $c->get(IRequest::class),
+                $c->get(IConfig::class)
+            );
+        });
+        
+        $context->registerService('L10NController', function($c) {
+            return new \OCA\SameWindow\Controller\L10NController(
+                self::APP_ID,
+                $c->get(IRequest::class),
+                $c->get(IL10N::class)
+            );
+        });
         
         // Initialize L10N first for Nextcloud 31 compatibility
         \OC::$server->getL10NFactory()->get(self::APP_ID);
