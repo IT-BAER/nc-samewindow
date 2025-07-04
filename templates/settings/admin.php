@@ -71,7 +71,7 @@ document.addEventListener('DOMContentLoaded', function() {
         })
         .then(data => {
             console.log('Settings saved response:', data);
-            if (data && (data.status === 'success' || (data.ocs && data.ocs.meta && data.ocs.meta.status === 'ok'))) {
+            if (data && data.status === 'success') {
                 OC.Notification.showTemporary('<?php p($l->t('Settings saved successfully')); ?>');
             } else {
                 OC.Notification.showTemporary('<?php p($l->t('Error saving settings')); ?>');

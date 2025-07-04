@@ -25,12 +25,12 @@ declare(strict_types=1);
 namespace OCA\SameWindow\Controller;
 
 use OCA\SameWindow\AppInfo\Application;
-use OCP\AppFramework\OCSController;
+use OCP\AppFramework\Controller;
 use OCP\AppFramework\Http\DataResponse;
 use OCP\IRequest;
 use OCP\IL10N;
 
-class L10NController extends OCSController {
+class L10NController extends Controller {
 
     public function __construct(
         string $appName,
