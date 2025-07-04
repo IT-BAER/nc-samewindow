@@ -17,3 +17,11 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  *
  */
+
+(function() {
+    'use strict';
+    
+    // Main app code will be added here in the future if needed
+    // This stub ensures the script loading process completes successfully
+    console.debug('SameWindow app initialized');
+})();

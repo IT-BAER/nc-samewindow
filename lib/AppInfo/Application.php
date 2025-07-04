@@ -44,14 +44,15 @@ class Application extends App implements IBootstrap {
         // Initialize L10N first for Nextcloud 31 compatibility
         \OC::$server->getL10NFactory()->get('samewindow');
         
-        // Load translations - must be loaded before any other app scripts
-        \OCP\Util::addScript(self::APP_ID, 'l10n/translations', ['initial']);
+        // Register scripts with proper ordering
+        // First load the translation script
+        \OCP\Util::addScript(self::APP_ID, 'l10n/translations', '');
         
-        // Load app initialization script
-        \OCP\Util::addScript(self::APP_ID, 'samewindow-init');
+        // Then load the initialization script
+        \OCP\Util::addScript(self::APP_ID, 'samewindow-init', '');
         
-        // Register main app script
-        \OCP\Util::addScript(self::APP_ID, 'samewindow');
+        // Finally load the main app script
+        \OCP\Util::addScript(self::APP_ID, 'samewindow', '');
     }
 
     public function boot(IBootContext $context): void {
