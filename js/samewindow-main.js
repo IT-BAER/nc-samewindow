@@ -141,47 +141,36 @@
                 logDebug('Modifying link', link);
                 modified++;
                 
-                // Remove target attributes that open new windows
-                if (link.hasAttribute('target')) {
-                    const target = link.getAttribute('target');
-                    if (target === '_blank' || target === '_new') {
-                        link.removeAttribute('target');
-                        
-                        // Add a visual indicator that this link was modified
-                        const currentTitle = link.getAttribute('title') || '';
-                        link.setAttribute('title', 
-                            currentTitle + 
-                            (currentTitle ? ' - ' : '') + 
-                            'Opens in same tab'
-                        );
-                    }
-                }
+                // Check if this link has a target that opens new window
+                const target = link.getAttribute('target');
+                if (target === '_blank' || target === '_new') {
+                    // Add a visual indicator that this link was modified
+                    const currentTitle = link.getAttribute('title') || '';
+                    link.setAttribute('title', 
+                        currentTitle + 
+                        (currentTitle ? ' - ' : '') + 
+                        'Opens in same tab (Ctrl/Cmd/Shift+click for new tab)'
+                    );
 
-                // Also handle click events for any programmatic target="_blank" settings
-                link.addEventListener('click', function(e) {
-                    // Allow user to override by holding Ctrl/Cmd/Shift - let browser handle it
-                    if (e.ctrlKey || e.metaKey || e.shiftKey) {
-                        // For modifier keys, restore target="_blank" temporarily to allow new tab
-                        if (!link.hasAttribute('target')) {
-                            link.setAttribute('target', '_blank');
+                    // Handle click events to control opening behavior
+                    link.addEventListener('click', function(e) {
+                        // Allow user to override with modifier keys - let browser handle naturally
+                        if (e.ctrlKey || e.metaKey || e.shiftKey || e.which === 2) {
+                            // Don't interfere with modifier keys or middle click
+                            return;
                         }
-                        return; // Let the browser handle the modified link normally
-                    }
-                    
-                    // For relative links and anchors, let them navigate normally
-                    if (link.getAttribute('href') && 
-                        (link.getAttribute('href').startsWith('#') || 
-                         link.getAttribute('href').startsWith('/') ||
-                         !link.getAttribute('href').includes('://'))) {
-                        return;
-                    }
-                    
-                    // For external links, only force same window if no modifier keys
-                    if (link.href && link.href !== window.location.href) {
-                        window.location.href = link.href;
+                        
+                        // For same-page anchors, let them navigate normally
+                        const href = link.getAttribute('href');
+                        if (href && href.startsWith('#')) {
+                            return;
+                        }
+                        
+                        // Prevent default new tab behavior and navigate in same window
                         e.preventDefault();
-                    }
-                });
+                        window.location.href = link.href;
+                    });
+                }
             });
             
             logDebug(`Modified ${modified} links`);
