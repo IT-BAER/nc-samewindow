@@ -35,18 +35,14 @@
 
     // Load configuration from server
     function loadConfig() {
-        try {
-            // Try the OCS API endpoint
-            const apiUrl = OC.generateUrl('/ocs/v2.php/apps/samewindow/api/v1/config') + '?format=json';
-            
-            return fetch(apiUrl, {
-                method: 'GET',
-                headers: {
-                    'requesttoken': OC.requestToken,
-                    'Accept': 'application/json',
-                    'OCS-APIRequest': 'true'
-                }
-            })
+        // First try the regular web API (more compatible)
+        return fetch(OC.generateUrl('/apps/samewindow/config'), {
+            method: 'GET',
+            headers: {
+                'requesttoken': OC.requestToken,
+                'Accept': 'application/json'
+            }
+        })
         .then(response => {
             if (!response.ok) {
                 throw new Error('Server returned ' + response.status);
@@ -55,47 +51,17 @@
         })
         .then(data => {
             console.debug('SameWindow: Loaded configuration:', data);
-            if (data && data.ocs && data.ocs.data) {
-                const configData = data.ocs.data;
-                config = {
-                    enabled: configData.enabled || false,
-                    targetSelectors: configData.target_selectors || 'a[target="_blank"], a[target="_new"]',
-                    excludeSelectors: configData.exclude_selectors || '.external-link, .new-window-link'
-                };
-            }
+            config = {
+                enabled: data.enabled || false,
+                targetSelectors: data.target_selectors || 'a[target="_blank"], a[target="_new"]',
+                excludeSelectors: data.exclude_selectors || '.external-link, .new-window-link'
+            };
             return config;
         })
         .catch(error => {
-            console.warn('SameWindow: Error loading config via OCS API:', error);
-            
-            // Fallback to regular API
-            return fetch(OC.generateUrl('/apps/samewindow/config'), {
-                method: 'GET',
-                headers: {
-                    'requesttoken': OC.requestToken,
-                    'Accept': 'application/json'
-                }
-            })
-            .then(response => {
-                if (!response.ok) {
-                    throw new Error('Server returned ' + response.status);
-                }
-                return response.json();
-            })
-            .then(data => {
-                console.debug('SameWindow: Loaded configuration via fallback API:', data);
-                config = {
-                    enabled: data.enabled || false,
-                    targetSelectors: data.target_selectors || 'a[target="_blank"], a[target="_new"]',
-                    excludeSelectors: data.exclude_selectors || '.external-link, .new-window-link'
-                };
-                return config;
-            })
-            .catch(fallbackError => {
-                console.error('SameWindow: Error loading config via fallback API:', fallbackError);
-                // Continue with default config
-                return config;
-            });
+            console.warn('SameWindow: Error loading config via regular API:', error);
+            console.warn('SameWindow: Continuing with default config');
+            return config;
         });
     }
 
@@ -164,57 +130,65 @@
 
     // Observer to watch for dynamically added content
     function setupObserver() {
-        const observer = new MutationObserver(function(mutations) {
-            let shouldProcess = false;
-            
-            mutations.forEach(function(mutation) {
-                if (mutation.type === 'childList') {
-                    mutation.addedNodes.forEach(function(node) {
-                        if (node.nodeType === Node.ELEMENT_NODE) {
-                            // Check if the added node or its children contain links
-                            if (node.tagName === 'A' || node.querySelectorAll('a').length > 0) {
-                                shouldProcess = true;
+        try {
+            const observer = new MutationObserver(function(mutations) {
+                let shouldProcess = false;
+                
+                mutations.forEach(function(mutation) {
+                    if (mutation.type === 'childList') {
+                        mutation.addedNodes.forEach(function(node) {
+                            if (node.nodeType === Node.ELEMENT_NODE) {
+                                // Check if the added node or its children contain links
+                                if (node.tagName === 'A' || node.querySelectorAll('a').length > 0) {
+                                    shouldProcess = true;
+                                }
                             }
-                        }
-                    });
+                        });
+                    }
+                });
+                
+                if (shouldProcess) {
+                    // Debounce the processing to avoid excessive calls
+                    clearTimeout(observer.timer);
+                    observer.timer = setTimeout(modifyLinks, 100);
                 }
             });
-            
-            if (shouldProcess) {
-                // Debounce the processing to avoid excessive calls
-                clearTimeout(observer.timer);
-                observer.timer = setTimeout(modifyLinks, 100);
-            }
-        });
 
-        observer.observe(document.body, {
-            childList: true,
-            subtree: true
-        });
+            observer.observe(document.body, {
+                childList: true,
+                subtree: true
+            });
+        } catch (error) {
+            console.error('SameWindow: Error setting up observer:', error);
+        }
     }
 
     // Initialize the app
     function init() {
-        // Load configuration first
-        loadConfig().then(() => {
-            if (config.enabled) {
-                // Process existing links
-                modifyLinks();
-                
-                // Set up observer for dynamic content
-                setupObserver();
-                
-                // Process links when widgets are loaded
-                document.addEventListener('DOMContentLoaded', modifyLinks);
-                
-                // Also process after a short delay for dynamic content
-                setTimeout(modifyLinks, 1000);
-                
-                console.log('SameWindow: Initialized successfully');
-            } else {
-                console.log('SameWindow: Disabled in configuration');
-            }
-        });
+        try {
+            // Load configuration first
+            loadConfig().then(() => {
+                if (config.enabled) {
+                    // Process existing links
+                    modifyLinks();
+                    
+                    // Set up observer for dynamic content
+                    setupObserver();
+                    
+                    // Process links when widgets are loaded
+                    document.addEventListener('DOMContentLoaded', modifyLinks);
+                    
+                    // Also process after a short delay for dynamic content
+                    setTimeout(modifyLinks, 1000);
+                    
+                    console.log('SameWindow: Initialized successfully');
+                } else {
+                    console.log('SameWindow: Disabled in configuration');
+                }
+            });
+        } catch (error) {
+            console.error('SameWindow: Error during initialization:', error);
+        }
     }
 
     // Start when DOM is ready

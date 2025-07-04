@@ -61,7 +61,20 @@ class ConfigController extends OCSController {
      * @NoCSRFRequired
      * @PublicPage
      */
-    public function setConfig(bool $enabled = true, string $targetSelectors = '', string $excludeSelectors = ''): DataResponse {
+    public function setConfig(): DataResponse {
+        // Get JSON data from request body
+        $requestData = json_decode(file_get_contents('php://input'), true);
+        
+        if (!$requestData) {
+            return new DataResponse(['status' => 'error', 'message' => 'Invalid JSON data'], 400);
+        }
+        
+        // Extract values from the request data
+        $enabled = isset($requestData['enabled']) ? (bool)$requestData['enabled'] : true;
+        $targetSelectors = isset($requestData['targetSelectors']) ? (string)$requestData['targetSelectors'] : '';
+        $excludeSelectors = isset($requestData['excludeSelectors']) ? (string)$requestData['excludeSelectors'] : '';
+        
+        // Save the settings
         $this->config->setAppValue(Application::APP_ID, 'enabled', $enabled ? 'yes' : 'no');
         
         if ($targetSelectors !== '') {
