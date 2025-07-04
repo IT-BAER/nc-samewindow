@@ -52,7 +52,12 @@
             '.content-wrapper',
             '.dashboard-widget-item',
             '.api-dashboard-widget-item',
-            '[data-v-db766935]' // Vue component widget areas
+            '[data-v-db766935]', // Vue component widget areas
+            '[data-v-53796b97]', // Additional Vue component widget areas
+            '[data-v-51550203]', // Additional Vue component widget areas
+            '.panel', // Panel widgets
+            '.panel-content', // Panel content areas
+            '.recommendation' // Recommendation widgets
         ],
         // Links that should be modified
         targetSelectors: 'a[target="_blank"], a[target="_new"]',
@@ -100,6 +105,23 @@
             return true;
         }
         
+        // Check if element is a link inside a dashboard widget or panel
+        if (element.tagName === 'A' && element.getAttribute('href')) {
+            // Check for various dashboard widget patterns
+            const widgetParent = element.closest('.dashboard-widget, .panel, .widget, [class*="dashboard-widget"], [data-v-53796b97], [data-v-51550203], [data-v-db766935]');
+            if (widgetParent) {
+                logDebug('Element is a link inside dashboard widget', widgetParent);
+                return true;
+            }
+            
+            // Check for recommendation widgets or similar structures
+            const recommendationParent = element.closest('[id*="recommendation"], [class*="recommendation"], [data-testid*="recommendation"]');
+            if (recommendationParent) {
+                logDebug('Element is a link inside recommendation widget', recommendationParent);
+                return true;
+            }
+        }
+        
         // Check other widget selectors
         for (const selector of config.widgetSelectors) {
             if (element.matches && element.matches(selector)) {
@@ -128,8 +150,18 @@
             let modified = 0;
             
             targetLinks.forEach(link => {
+                logDebug('Processing link:', {
+                    href: link.href,
+                    target: link.getAttribute('target'),
+                    classes: link.className,
+                    id: link.id,
+                    parentClasses: link.parentElement?.className,
+                    parentId: link.parentElement?.id
+                });
+                
                 // Skip if the link is already processed
                 if (link.hasAttribute('data-samewindow-processed')) {
+                    logDebug('Link already processed, skipping');
                     return;
                 }
                 
