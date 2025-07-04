@@ -30,8 +30,6 @@ use OCP\AppFramework\Bootstrap\IBootContext;
 use OCP\AppFramework\Bootstrap\IBootstrap;
 use OCP\AppFramework\Bootstrap\IRegistrationContext;
 use OCP\AppFramework\Http\Events\BeforeTemplateRenderedEvent;
-use OCP\IConfig;
-use OCP\IL10N;
 
 class Application extends App implements IBootstrap {
     public const APP_ID = 'samewindow';
@@ -42,61 +40,9 @@ class Application extends App implements IBootstrap {
 
     public function register(IRegistrationContext $context): void {
         $context->registerEventListener(BeforeTemplateRenderedEvent::class, LoadAdditionalScriptsListener::class);
-        
-        // Register controllers - no need to manually register controllers, this is done automatically
-        // when they are in the correct namespace and extend Controller
-        
-        // Initialize L10N first for Nextcloud 31 compatibility
-        \OC::$server->getL10NFactory()->get(self::APP_ID);
-        
-        // Load styles first
-        \OCP\Util::addStyle(self::APP_ID, 'samewindow');
-        
-        // Load scripts in correct order
-        // First load the translations script without subdirectory path
-        \OCP\Util::addScript(self::APP_ID, 'translations');
-        
-        // Then load the initialization script
-        \OCP\Util::addScript(self::APP_ID, 'samewindow-init');
-        
-        // Finally load the main app script
-        \OCP\Util::addScript(self::APP_ID, 'samewindow');
     }
 
     public function boot(IBootContext $context): void {
-        // Initialize translations early to avoid missing translation errors
-        $this->initTranslations();
-    }
-    
-    /**
-     * Initialize app translations
-     */
-    private function initTranslations(): void {
-        // Make sure translations are properly initialized for Nextcloud 31
-        try {
-            // Get the language factory
-            $l10nFactory = \OC::$server->getL10NFactory();
-            
-            // Pre-load app translations
-            $l10n = $l10nFactory->get(self::APP_ID);
-            
-            // Force load the translations for this app
-            $l10nDir = \OC::$SERVERROOT . '/apps/' . self::APP_ID . '/l10n/';
-            $l10nFile = $l10nDir . $l10n->getLanguageCode() . '.json';
-            
-            if (!file_exists($l10nFile)) {
-                $l10nFile = $l10nDir . 'en.json';
-            }
-            
-            if (file_exists($l10nFile)) {
-                $translations = json_decode(file_get_contents($l10nFile), true);
-                if (isset($translations['translations'])) {
-                    // The translations are already properly formatted, no need to do anything else
-                }
-            }
-        } catch (\Exception $e) {
-            // Log any errors but continue
-            \OCP\Util::writeLog(self::APP_ID, 'Error initializing translations: ' . $e->getMessage(), \OCP\ILogger::WARN);
-        }
+        // Scripts and styles are loaded via the listener
     }
 }
