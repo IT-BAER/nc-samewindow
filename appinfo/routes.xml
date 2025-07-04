@@ -1,0 +1,14 @@
+<?xml version="1.0"?>
+<routes xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:noNamespaceSchemaLocation="https://apps.nextcloud.com/schema/apps/routes.xsd">
+    <route>
+        <id>config#setConfig</id>
+        <verb>POST</verb>
+        <url>/config</url>
+    </route>
+    <route>
+        <id>config#getConfig</id>
+        <verb>GET</verb>
+        <url>/config</url>
+    </route>
+</routes>

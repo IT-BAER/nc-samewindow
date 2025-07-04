@@ -1,0 +1,69 @@
+<?php
+
+declare(strict_types=1);
+
+/**
+ * @copyright Copyright (c) 2025 Developer
+ *
+ * @license GNU AGPL version 3 or any later version
+ *
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU Affero General Public License as
+ * published by the Free Software Foundation, either version 3 of the
+ * License, or (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU Affero General Public License for more details.
+ *
+ * You should have received a copy of the GNU Affero General Public License
+ * along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ *
+ */
+
+namespace OCA\SameWindow\Controller;
+
+use OCA\SameWindow\AppInfo\Application;
+use OCP\AppFramework\Controller;
+use OCP\AppFramework\Http\JSONResponse;
+use OCP\IConfig;
+use OCP\IRequest;
+
+class ConfigController extends Controller {
+
+    public function __construct(
+        IRequest $request,
+        private IConfig $config,
+    ) {
+        parent::__construct(Application::APP_ID, $request);
+    }
+
+    /**
+     * @NoAdminRequired
+     */
+    public function getConfig(): JSONResponse {
+        return new JSONResponse([
+            'enabled' => $this->config->getAppValue(Application::APP_ID, 'enabled', 'yes') === 'yes',
+            'target_selectors' => $this->config->getAppValue(Application::APP_ID, 'target_selectors', 'a[target="_blank"], a[target="_new"]'),
+            'exclude_selectors' => $this->config->getAppValue(Application::APP_ID, 'exclude_selectors', '.external-link, .new-window-link'),
+        ]);
+    }
+
+    /**
+     * @NoAdminRequired
+     */
+    public function setConfig(bool $enabled, string $targetSelectors = '', string $excludeSelectors = ''): JSONResponse {
+        $this->config->setAppValue(Application::APP_ID, 'enabled', $enabled ? 'yes' : 'no');
+        
+        if ($targetSelectors) {
+            $this->config->setAppValue(Application::APP_ID, 'target_selectors', $targetSelectors);
+        }
+        
+        if ($excludeSelectors) {
+            $this->config->setAppValue(Application::APP_ID, 'exclude_selectors', $excludeSelectors);
+        }
+
+        return new JSONResponse(['success' => true]);
+    }
+}
