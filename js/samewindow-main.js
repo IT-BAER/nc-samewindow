@@ -49,7 +49,10 @@
             '.app-content-detail', 
             '#app-content',
             '.section',
-            '.content-wrapper'
+            '.content-wrapper',
+            '.dashboard-widget-item',
+            '.api-dashboard-widget-item',
+            '[data-v-db766935]' // Vue component widget areas
         ],
         // Links that should be modified
         targetSelectors: 'a[target="_blank"], a[target="_new"]',
@@ -91,6 +94,13 @@
 
     // Check if an element is inside a widget
     function isInWidget(element) {
+        // Check if the element itself is a widget link
+        if (element.matches && element.matches('.item-list__entry, .dashboard-widget-item, .api-dashboard-widget-item')) {
+            logDebug('Element is a widget link', element);
+            return true;
+        }
+        
+        // Check other widget selectors
         for (const selector of config.widgetSelectors) {
             if (element.matches && element.matches(selector)) {
                 logDebug('Element matches widget selector', selector, element);
@@ -144,6 +154,12 @@
                 // Check if this link has a target that opens new window
                 const target = link.getAttribute('target');
                 if (target === '_blank' || target === '_new') {
+                    // Store the original target for restoration if needed
+                    link.setAttribute('data-original-target', target);
+                    
+                    // Remove the target attribute to prevent new window opening
+                    link.removeAttribute('target');
+                    
                     // Add a visual indicator that this link was modified
                     const currentTitle = link.getAttribute('title') || '';
                     link.setAttribute('title', 
@@ -152,23 +168,50 @@
                         'Opens in same tab (Ctrl/Cmd/Shift+click for new tab)'
                     );
 
-                    // Handle click events to control opening behavior
+                    // Handle click events to allow modifier key overrides
                     link.addEventListener('click', function(e) {
-                        // Allow user to override with modifier keys - let browser handle naturally
-                        if (e.ctrlKey || e.metaKey || e.shiftKey || e.which === 2) {
-                            // Don't interfere with modifier keys or middle click
+                        logDebug('Click event:', {
+                            href: link.href,
+                            ctrlKey: e.ctrlKey,
+                            metaKey: e.metaKey,
+                            shiftKey: e.shiftKey,
+                            which: e.which,
+                            button: e.button
+                        });
+                        
+                        // If user uses modifier keys or middle click, open in new tab/window
+                        if (e.ctrlKey || e.metaKey || e.shiftKey || e.button === 1) {
+                            logDebug('Modifier key detected, opening in new tab/window');
+                            
+                            // Prevent default behavior
+                            e.preventDefault();
+                            
+                            // Open in new tab/window based on modifier key
+                            if (e.shiftKey) {
+                                // Shift+click opens in new window
+                                logDebug('Opening in new window (Shift+click)');
+                                window.open(link.href, '_blank', 'noopener,noreferrer');
+                            } else {
+                                // Ctrl/Cmd+click or middle click opens in new tab
+                                logDebug('Opening in new tab (Ctrl/Cmd+click or middle click)');
+                                window.open(link.href, '_blank');
+                            }
                             return;
                         }
                         
-                        // For same-page anchors, let them navigate normally
-                        const href = link.getAttribute('href');
-                        if (href && href.startsWith('#')) {
-                            return;
+                        logDebug('Normal click, opening in same window');
+                        // For normal clicks, ensure target is removed (same window behavior)
+                        link.removeAttribute('target');
+                        // Let the browser handle the click naturally (same window)
+                    });
+                    
+                    // Also handle mousedown event to catch middle clicks
+                    link.addEventListener('mousedown', function(e) {
+                        if (e.button === 1) { // Middle click
+                            logDebug('Middle click detected (mousedown)');
+                            e.preventDefault();
+                            window.open(link.href, '_blank');
                         }
-                        
-                        // Prevent default new tab behavior and navigate in same window
-                        e.preventDefault();
-                        window.location.href = link.href;
                     });
                 }
             });
