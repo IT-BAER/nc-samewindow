@@ -25,10 +25,10 @@ The app automatically detects links with `target="_blank"` or `target="_new"` at
     ]]></description>
     <version>1.0.0</version>
     <licence>agpl</licence>
-    <author mail="developer@example.com">Developer</author>
+    <author mail="admin@it-baer.net" homepage="https://it-baer.net">Bruno Miglar</author>
     <namespace>SameWindow</namespace>
     <category>tools</category>
-    <bugs>https://github.com/nextcloud/samewindow/issues</bugs>
+    <bugs>https://github.com/IT-BAER/nc-samewindow/issues</bugs>
 	<screenshot>https://raw.githubusercontent.com/nextcloud/samewindow/main/screenshots/screenshot1.png</screenshot>
     <dependencies>
         <nextcloud min-version="28" max-version="31" />
