@@ -78,6 +78,43 @@
         ]
     };
 
+    // Function to construct URL for recommendation links
+    function constructRecommendationUrl(link) {
+        logDebug('Constructing URL for recommendation link:', {
+            'aria-describedby': link.getAttribute('aria-describedby'),
+            'data-original-title': link.getAttribute('data-original-title'),
+            'title': link.getAttribute('title'),
+            'href': link.href,
+            'id': link.id,
+            'className': link.className
+        });
+        
+        // Try to extract file ID from aria-describedby attribute
+        const ariaDescribedBy = link.getAttribute('aria-describedby');
+        if (ariaDescribedBy) {
+            const match = ariaDescribedBy.match(/recommendation-description-(\d+)/);
+            if (match) {
+                const fileId = match[1];
+                // Construct proper Nextcloud file URL
+                const url = `${window.location.origin}/index.php/apps/files/files/${fileId}?dir=/&openfile=true`;
+                logDebug('Constructed URL from file ID:', url);
+                return url;
+            }
+        }
+        
+        // Fallback: try to use original title if available
+        const originalTitle = link.getAttribute('data-original-title') || link.getAttribute('title');
+        if (originalTitle && originalTitle.startsWith('/')) {
+            const cleanTitle = originalTitle.split(' - ')[0]; // Remove our tooltip text
+            const url = `${window.location.origin}/index.php/f${cleanTitle}`;
+            logDebug('Constructed URL from title:', url);
+            return url;
+        }
+        
+        logDebug('Could not construct URL for recommendation link');
+        return null;
+    }
+
     // Check if an element should be excluded
     function isExcluded(element) {
         // Check if element itself matches any exclude selector
@@ -195,6 +232,12 @@
                         link.removeAttribute('target');
                     }
                     
+                    // For recommendation links, store the original title before modifying it
+                    if (isRecommendationLink) {
+                        const originalTitle = link.getAttribute('title') || '';
+                        link.setAttribute('data-original-title', originalTitle);
+                    }
+                    
                     // Add a visual indicator that this link was modified
                     const currentTitle = link.getAttribute('title') || '';
                     link.setAttribute('title', 
@@ -225,12 +268,8 @@
                             // For recommendation links, try to construct URL from title
                             let url = link.href;
                             if (isRecommendationLink) {
-                                const titlePath = link.getAttribute('title');
-                                if (titlePath && titlePath.startsWith('/')) {
-                                    // Convert title path to file viewer URL
-                                    url = window.location.origin + '/index.php/f' + titlePath;
-                                } else {
-                                    // If we can't construct URL, let Vue.js handle it
+                                url = constructRecommendationUrl(link);
+                                if (!url) {
                                     logDebug('Could not construct URL for recommendation link');
                                     return;
                                 }
@@ -270,11 +309,8 @@
                             // For recommendation links, try to construct URL from title
                             let url = link.href;
                             if (isRecommendationLink) {
-                                const titlePath = link.getAttribute('title');
-                                if (titlePath && titlePath.startsWith('/')) {
-                                    // Convert title path to file viewer URL
-                                    url = window.location.origin + '/index.php/f' + titlePath;
-                                } else {
+                                url = constructRecommendationUrl(link);
+                                if (!url) {
                                     logDebug('Could not construct URL for recommendation link');
                                     return;
                                 }
