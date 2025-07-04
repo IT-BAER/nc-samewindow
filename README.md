@@ -11,7 +11,6 @@ The Same Window app automatically modifies links on frontend Widgets to open in 
 - **Automatic Link Modification**: Automatically removes `target="_blank"` and `target="_new"` attributes from links
 - **Widget-Only Processing**: Only affects links within content widgets, not navigation or headers
 - **Smart Link Handling**: Intelligently processes only links that should be modified
-- **Tooltip Feedback**: Adds helpful tooltip text to modified links indicating they will open in the same tab
 - **Dynamic Content Support**: Handles dynamically loaded content through mutation observers
 
 ## Installation
@@ -30,9 +29,7 @@ The Same Window app automatically modifies links on frontend Widgets to open in 
 
 ## User Override
 
-Users can still open links in new windows/tabs by holding modifier keys while clicking:
-- **Ctrl** (Windows/Linux) or **Cmd** (Mac) + click
-- **Shift** + click
+Users can still open links in new windows/tabs by using:
 - **Middle mouse button** click
 
 ## Development

@@ -6,12 +6,12 @@
 - Smart widget detection to only process links within content widgets
 - Exclusion of navigation and header links to preserve their original behavior
 - Dynamic content support through mutation observers
-- User override capability (Ctrl/Cmd/Shift + click to open in new window)
+- User override capability (middle-click to open in new window)
 - Compatibility with Nextcloud 28-31
 
 ### Features
 - **Widget-focused processing**: Only modifies links within dashboard widgets and content areas
 - **Smart exclusion**: Automatically excludes navigation, headers, and other UI elements
 - **Performance optimized**: Debounced processing to avoid excessive calls
-- **User-friendly**: Preserves user choice with keyboard modifier overrides (Ctrl/Cmd/Shift + click)
+- **User-friendly**: Preserves user choice with middle-click override
 - **Lightweight**: Minimal footprint with no unnecessary dependencies

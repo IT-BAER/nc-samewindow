@@ -19,8 +19,6 @@ This app ensures that all links on frontend widgets open in the same window/tab 
 
 The app automatically detects links with `target="_blank"` or `target="_new"` attributes within widget areas and modifies their behavior to open in the same window. Users can still override this behavior using:
 - **Middle-click** - Opens in new tab
-- **Ctrl+click** (Cmd+click on Mac) - Opens in new tab
-- **Shift+click** - Opens in new window
 
 ## 💻 Compatibility
 - Nextcloud 28, 29, 30 & 31

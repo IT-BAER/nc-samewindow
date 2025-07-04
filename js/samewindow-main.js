@@ -52,15 +52,12 @@
             '.content-wrapper',
             '.dashboard-widget-item',
             '.api-dashboard-widget-item',
-            '[data-v-db766935]', // Vue component widget areas
-            '[data-v-53796b97]', // Additional Vue component widget areas
-            '[data-v-51550203]', // Additional Vue component widget areas
             '.panel', // Panel widgets
             '.panel-content', // Panel content areas
             '.recommendation' // Recommendation widgets
         ],
         // Links that should be modified
-        targetSelectors: 'a[target="_blank"], a[target="_new"], a.recommendation, a[class*="recommendation"], a[data-v-51550203], a[data-v-53796b97], a[data-v-db766935]',
+        targetSelectors: 'a[target="_blank"], a[target="_new"], a.recommendation, a[class*="recommendation"]',
         // Areas to exclude (navigation, headers, etc.)
         excludeSelectors: [
             '.external-link', 
@@ -137,15 +134,15 @@
     // Check if an element is inside a widget
     function isInWidget(element) {
         // Check if the element itself is a widget link
-        if (element.matches && element.matches('.item-list__entry, .dashboard-widget-item, .api-dashboard-widget-item')) {
+        if (element.matches && element.matches('.item-list__entry, .dashboard-widget-item, .api-dashboard-widget-item, .recommendation')) {
             logDebug('Element is a widget link', element);
             return true;
         }
         
         // Check if element is a link inside a dashboard widget or panel
-        if (element.tagName === 'A' && element.getAttribute('href')) {
+        if (element.tagName === 'A') {
             // Check for various dashboard widget patterns
-            const widgetParent = element.closest('.dashboard-widget, .panel, .widget, [class*="dashboard-widget"], [data-v-53796b97], [data-v-51550203], [data-v-db766935]');
+            const widgetParent = element.closest('.dashboard-widget, .panel, .widget, [class*="dashboard-widget"]');
             if (widgetParent) {
                 logDebug('Element is a link inside dashboard widget', widgetParent);
                 return true;
@@ -156,6 +153,31 @@
             if (recommendationParent) {
                 logDebug('Element is a link inside recommendation widget', recommendationParent);
                 return true;
+            }
+            
+            // Generic Vue component detection - look for elements with data-v-* attributes
+            // that are likely widget containers (have certain classes or structure)
+            let parent = element.parentElement;
+            while (parent && parent !== document.body) {
+                // Check if parent has Vue data attributes and looks like a widget
+                const hasVueData = Array.from(parent.attributes).some(attr => attr.name.startsWith('data-v-'));
+                if (hasVueData) {
+                    // Check if it has widget-like characteristics
+                    const classList = parent.classList;
+                    const hasWidgetClass = Array.from(classList).some(cls => 
+                        cls.includes('widget') || 
+                        cls.includes('panel') || 
+                        cls.includes('dashboard') ||
+                        cls.includes('recommendation') ||
+                        cls.includes('item-list') ||
+                        cls.includes('file-list')
+                    );
+                    if (hasWidgetClass) {
+                        logDebug('Element is inside Vue widget component', parent);
+                        return true;
+                    }
+                }
+                parent = parent.parentElement;
             }
         }
         
@@ -222,7 +244,7 @@
                 
                 // Check if this link has a target that opens new window
                 const target = link.getAttribute('target');
-                const isRecommendationLink = link.matches('.recommendation, [class*="recommendation"], [data-v-51550203], [data-v-53796b97], [data-v-db766935]');
+                const isRecommendationLink = link.matches('.recommendation, [class*="recommendation"]');
                 
                 if (target === '_blank' || target === '_new' || isRecommendationLink) {
                     // Store the original target for restoration if needed
