@@ -44,7 +44,6 @@ class ConfigController extends Controller {
      * @NoAdminRequired
      * @CORS
      * @NoCSRFRequired
-     * @PublicPage
      */
     public function getConfig(): DataResponse {
         $data = [
@@ -59,29 +58,34 @@ class ConfigController extends Controller {
      * @NoAdminRequired
      * @CORS
      * @NoCSRFRequired
-     * @PublicPage
      */
-    public function setConfig(): DataResponse {
-        // Get JSON data from request body
-        $requestData = json_decode(file_get_contents('php://input'), true);
+    public function setConfig(string $enabled = null, string $targetSelectors = null, string $excludeSelectors = null): DataResponse {
+        // Try to get JSON data from request body first
+        $requestBody = file_get_contents('php://input');
+        $requestData = json_decode($requestBody, true);
         
-        if (!$requestData) {
-            return new DataResponse(['status' => 'error', 'message' => 'Invalid JSON data'], 400);
+        // Use JSON data if available, otherwise fall back to form parameters
+        if ($requestData) {
+            $enabled = isset($requestData['enabled']) ? $requestData['enabled'] : null;
+            $targetSelectors = isset($requestData['targetSelectors']) ? $requestData['targetSelectors'] : null;
+            $excludeSelectors = isset($requestData['excludeSelectors']) ? $requestData['excludeSelectors'] : null;
         }
         
-        // Extract values from the request data
-        $enabled = isset($requestData['enabled']) ? (bool)$requestData['enabled'] : true;
-        $targetSelectors = isset($requestData['targetSelectors']) ? (string)$requestData['targetSelectors'] : '';
-        $excludeSelectors = isset($requestData['excludeSelectors']) ? (string)$requestData['excludeSelectors'] : '';
+        // Convert enabled to boolean if it's a string
+        if (is_string($enabled)) {
+            $enabled = ($enabled === 'true' || $enabled === '1' || $enabled === 'on');
+        }
         
         // Save the settings
-        $this->config->setAppValue(Application::APP_ID, 'enabled', $enabled ? 'yes' : 'no');
+        if ($enabled !== null) {
+            $this->config->setAppValue(Application::APP_ID, 'enabled', $enabled ? 'yes' : 'no');
+        }
         
-        if ($targetSelectors !== '') {
+        if ($targetSelectors !== null && $targetSelectors !== '') {
             $this->config->setAppValue(Application::APP_ID, 'target_selectors', $targetSelectors);
         }
         
-        if ($excludeSelectors !== '') {
+        if ($excludeSelectors !== null && $excludeSelectors !== '') {
             $this->config->setAppValue(Application::APP_ID, 'exclude_selectors', $excludeSelectors);
         }
 

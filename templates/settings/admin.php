@@ -58,6 +58,7 @@ document.addEventListener('DOMContentLoaded', function() {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',
+                'X-Requested-With': 'XMLHttpRequest',
                 'requesttoken': OC.requestToken,
                 'Accept': 'application/json'
             },
