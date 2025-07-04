@@ -32,63 +32,50 @@ use OCP\IRequest;
 
 class ConfigController extends Controller {
 
-    public function __construct(
-        string $appName,
-        IRequest $request,
-        private IConfig $config,
-    ) {
-        parent::__construct($appName, $request);
-    }
+	public function __construct(
+		string $appName,
+		IRequest $request,
+		private IConfig $config,
+	) {
+		parent::__construct($appName, $request);
+	}
 
-    /**
-     * @NoAdminRequired
-     * @CORS
-     * @NoCSRFRequired
-     */
-    public function getConfig(): DataResponse {
-        $data = [
-            'enabled' => $this->config->getAppValue(Application::APP_ID, 'enabled', 'yes') === 'yes',
-            'target_selectors' => $this->config->getAppValue(Application::APP_ID, 'target_selectors', 'a[target="_blank"], a[target="_new"]'),
-            'exclude_selectors' => $this->config->getAppValue(Application::APP_ID, 'exclude_selectors', '.external-link, .new-window-link'),
-        ];
-        return new DataResponse($data);
-    }
+	/**
+	 * @NoAdminRequired
+	 * @CORS
+	 */
+	public function getConfig(): DataResponse {
+		$data = [
+			'enabled' => $this->config->getAppValue(Application::APP_ID, 'enabled', 'yes') === 'yes',
+			'target_selectors' => $this->config->getAppValue(Application::APP_ID, 'target_selectors', 'a[target="_blank"], a[target="_new"]'),
+			'exclude_selectors' => $this->config->getAppValue(Application::APP_ID, 'exclude_selectors', '.external-link, .new-window-link'),
+		];
+		return new DataResponse($data);
+	}
 
-    /**
-     * @NoAdminRequired
-     * @CORS
-     * @NoCSRFRequired
-     */
-    public function setConfig(string $enabled = null, string $targetSelectors = null, string $excludeSelectors = null): DataResponse {
-        // Try to get JSON data from request body first
-        $requestBody = file_get_contents('php://input');
-        $requestData = json_decode($requestBody, true);
-        
-        // Use JSON data if available, otherwise fall back to form parameters
-        if ($requestData) {
-            $enabled = isset($requestData['enabled']) ? $requestData['enabled'] : null;
-            $targetSelectors = isset($requestData['targetSelectors']) ? $requestData['targetSelectors'] : null;
-            $excludeSelectors = isset($requestData['excludeSelectors']) ? $requestData['excludeSelectors'] : null;
-        }
-        
-        // Convert enabled to boolean if it's a string
-        if (is_string($enabled)) {
-            $enabled = ($enabled === 'true' || $enabled === '1' || $enabled === 'on');
-        }
-        
-        // Save the settings
-        if ($enabled !== null) {
-            $this->config->setAppValue(Application::APP_ID, 'enabled', $enabled ? 'yes' : 'no');
-        }
-        
-        if ($targetSelectors !== null && $targetSelectors !== '') {
-            $this->config->setAppValue(Application::APP_ID, 'target_selectors', $targetSelectors);
-        }
-        
-        if ($excludeSelectors !== null && $excludeSelectors !== '') {
-            $this->config->setAppValue(Application::APP_ID, 'exclude_selectors', $excludeSelectors);
-        }
+	/**
+	 * @NoAdminRequired
+	 * @CORS
+	 */
+	public function setConfig(): DataResponse {
+		$params = $this->request->getParams();
 
-        return new DataResponse(['status' => 'success']);
-    }
+		$enabled = isset($params['enabled']) ? (bool)$params['enabled'] : null;
+		$targetSelectors = $params['targetSelectors'] ?? null;
+		$excludeSelectors = $params['excludeSelectors'] ?? null;
+
+		if ($enabled !== null) {
+			$this->config->setAppValue(Application::APP_ID, 'enabled', $enabled ? 'yes' : 'no');
+		}
+
+		if ($targetSelectors !== null) {
+			$this->config->setAppValue(Application::APP_ID, 'target_selectors', $targetSelectors);
+		}
+
+		if ($excludeSelectors !== null) {
+			$this->config->setAppValue(Application::APP_ID, 'exclude_selectors', $excludeSelectors);
+		}
+
+		return new DataResponse(['status' => 'success']);
+	}
 }
