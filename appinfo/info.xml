@@ -12,7 +12,7 @@ Features:
 - Supports dynamic content through mutation observers
 - Compatible with the latest Nextcloud versions
     ]]></description>
-    <version>1.0.0</version>
+    <version>1.0.1</version>
     <licence>agpl</licence>
     <author mail="developer@example.com">Developer</author>
     <namespace>SameWindow</namespace>

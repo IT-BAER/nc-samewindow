@@ -159,18 +159,24 @@
 
                 // Also handle click events for any programmatic target="_blank" settings
                 link.addEventListener('click', function(e) {
-                    // Prevent default if it would open in new window
+                    // Allow user to override by holding Ctrl/Cmd/Shift - let browser handle it
                     if (e.ctrlKey || e.metaKey || e.shiftKey) {
-                        // Allow user to override by holding Ctrl/Cmd/Shift
+                        // For modifier keys, restore target="_blank" temporarily to allow new tab
+                        if (!link.hasAttribute('target')) {
+                            link.setAttribute('target', '_blank');
+                        }
+                        return; // Let the browser handle the modified link normally
+                    }
+                    
+                    // For relative links and anchors, let them navigate normally
+                    if (link.getAttribute('href') && 
+                        (link.getAttribute('href').startsWith('#') || 
+                         link.getAttribute('href').startsWith('/') ||
+                         !link.getAttribute('href').includes('://'))) {
                         return;
                     }
                     
-                    // For relative links, let them navigate normally
-                    if (link.getAttribute('href') && link.getAttribute('href').startsWith('#')) {
-                        return;
-                    }
-                    
-                    // For external links, navigate in same window
+                    // For external links, only force same window if no modifier keys
                     if (link.href && link.href !== window.location.href) {
                         window.location.href = link.href;
                         e.preventDefault();

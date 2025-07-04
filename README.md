@@ -1,17 +1,17 @@
-# Same Window (nc-samewindow)
+# Same Window
 
-A Nextcloud app that prevents links on frontend widgets from opening in new windows/tabs, providing a more seamless user experience.
+A Nextcloud App/Modification that prevents links on frontend Widgets from opening in new Windows/Tabs, providing a more seamless user experience.
 
 ## Description
 
-The Same Window app automatically modifies links on frontend widgets to open in the same window instead of opening new tabs or windows. This ensures users stay within the current Nextcloud interface and provides a more integrated experience.
+The Same Window app automatically modifies links on frontend Widgets to open in the same Window instead of opening new Tabs or Windows. This ensures users stay within the current Nextcloud interface and provides a more integrated experience.
 
 ## Features
 
 - **Automatic Link Modification**: Automatically removes `target="_blank"` and `target="_new"` attributes from links
 - **Widget-Only Processing**: Only affects links within content widgets, not navigation or headers
 - **Smart Link Handling**: Intelligently processes only links that should be modified
-- **Visual Feedback**: Optional visual indicators for processed links
+- **Tooltip Feedback**: Adds helpful tooltip text to modified links indicating they will open in the same tab
 - **Dynamic Content Support**: Handles dynamically loaded content through mutation observers
 
 ## Installation
@@ -30,23 +30,12 @@ The Same Window app automatically modifies links on frontend widgets to open in 
 
 ## User Override
 
-Users can still open links in new windows by holding:
-- **Ctrl** (Windows/Linux) or **Cmd** (Mac) while clicking
-- **Shift** while clicking
+Users can still open links in new windows/tabs by holding modifier keys while clicking:
+- **Ctrl** (Windows/Linux) or **Cmd** (Mac) + click
+- **Shift** + click
+- **Middle mouse button** click
 
 ## Development
-
-### Building
-
-```bash
-make build
-```
-
-### Testing
-
-```bash
-make test
-```
 
 ### Requirements
 
@@ -73,12 +62,6 @@ This project is licensed under the AGPL-3.0 License - see the [LICENSE](LICENSE)
 - Improved link detection and processing
 - Smart exclusion of navigation and header elements
 - Better performance and reliability
-
-### v0.1.0
-- Initial release
-- Basic link modification functionality
-- Dynamic content support
-- User override functionality
 
 ## Support
 
