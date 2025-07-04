@@ -23,21 +23,25 @@
 
     // Initialize the app
     document.addEventListener('DOMContentLoaded', function() {
-        if (typeof OC === 'undefined') {
-            console.error('OC is not defined - SameWindow cannot initialize');
-            return;
-        }
-        
-        // Ensure translations are registered if they're available
-        if (OC.L10N && window.samewindowTranslations) {
-            try {
-                OC.L10N.register('samewindow', window.samewindowTranslations);
-                console.debug('SameWindow translations registered from init');
-            } catch (e) {
-                console.error('Failed to register SameWindow translations in init.js:', e);
+        try {
+            if (typeof OC === 'undefined') {
+                console.error('OC is not defined - SameWindow cannot initialize');
+                return;
             }
-        }
         
-        console.debug('SameWindow app init complete');
+            // Ensure translations are registered if they're available
+            if (OC.L10N && window.samewindowTranslations) {
+                try {
+                    OC.L10N.register('samewindow', window.samewindowTranslations);
+                    console.debug('SameWindow translations registered from init');
+                } catch (e) {
+                    console.error('Failed to register SameWindow translations in init.js:', e);
+                }
+            }
+            
+            console.debug('SameWindow app init complete');
+        } catch (error) {
+            console.error('Error in SameWindow initialization:', error);
+        }
     });
 })();

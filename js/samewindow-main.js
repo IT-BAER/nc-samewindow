@@ -21,6 +21,12 @@
 (function() {
     'use strict';
 
+    // Bail early if OC is not defined
+    if (typeof OC === 'undefined') {
+        console.error('SameWindow: OC is not defined, cannot initialize');
+        return;
+    }
+
     let config = {
         enabled: true,
         targetSelectors: 'a[target="_blank"], a[target="_new"]',
@@ -29,17 +35,18 @@
 
     // Load configuration from server
     function loadConfig() {
-        // Try the OCS API endpoint
-        const apiUrl = OC.generateUrl('/ocs/v2.php/apps/samewindow/api/v1/config') + '?format=json';
-        
-        return fetch(apiUrl, {
-            method: 'GET',
-            headers: {
-                'requesttoken': OC.requestToken,
-                'Accept': 'application/json',
-                'OCS-APIRequest': 'true'
-            }
-        })
+        try {
+            // Try the OCS API endpoint
+            const apiUrl = OC.generateUrl('/ocs/v2.php/apps/samewindow/api/v1/config') + '?format=json';
+            
+            return fetch(apiUrl, {
+                method: 'GET',
+                headers: {
+                    'requesttoken': OC.requestToken,
+                    'Accept': 'application/json',
+                    'OCS-APIRequest': 'true'
+                }
+            })
         .then(response => {
             if (!response.ok) {
                 throw new Error('Server returned ' + response.status);
