@@ -238,13 +238,7 @@
                         link.setAttribute('data-original-title', originalTitle);
                     }
                     
-                    // Add a visual indicator that this link was modified
-                    const currentTitle = link.getAttribute('title') || '';
-                    link.setAttribute('title', 
-                        currentTitle + 
-                        (currentTitle ? ' - ' : '') + 
-                        'Opens in same tab (middle-click for new tab)'
-                    );
+                    // Don't modify the title - let users discover middle-click behavior naturally
 
                     // Handle click events to allow modifier key overrides
                     link.addEventListener('click', function(e) {
