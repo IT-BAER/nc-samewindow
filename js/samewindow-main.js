@@ -200,7 +200,7 @@
                     link.setAttribute('title', 
                         currentTitle + 
                         (currentTitle ? ' - ' : '') + 
-                        'Opens in same tab (Ctrl/Cmd/Shift+click for new tab)'
+                        'Opens in same tab (middle-click for new tab)'
                     );
 
                     // Handle click events to allow modifier key overrides
@@ -222,12 +222,17 @@
                             // Prevent default behavior
                             e.preventDefault();
                             
-                            // For recommendation links without href, try to construct URL
+                            // For recommendation links, try to construct URL from title
                             let url = link.href;
-                            if (isRecommendationLink && (!url || url === window.location.href)) {
+                            if (isRecommendationLink) {
                                 const titlePath = link.getAttribute('title');
                                 if (titlePath && titlePath.startsWith('/')) {
+                                    // Convert title path to file viewer URL
                                     url = window.location.origin + '/index.php/f' + titlePath;
+                                } else {
+                                    // If we can't construct URL, let Vue.js handle it
+                                    logDebug('Could not construct URL for recommendation link');
+                                    return;
                                 }
                             }
                             
@@ -254,16 +259,32 @@
                             link.removeAttribute('target');
                         }
                         // Let the browser/Vue handle the click naturally
-                    });
+                    }, true); // Use capture phase to intercept before Vue.js
                     
                     // Also handle mousedown event to catch middle clicks
                     link.addEventListener('mousedown', function(e) {
                         if (e.button === 1) { // Middle click
                             logDebug('Middle click detected (mousedown)');
                             e.preventDefault();
-                            window.open(link.href, '_blank');
+                            
+                            // For recommendation links, try to construct URL from title
+                            let url = link.href;
+                            if (isRecommendationLink) {
+                                const titlePath = link.getAttribute('title');
+                                if (titlePath && titlePath.startsWith('/')) {
+                                    // Convert title path to file viewer URL
+                                    url = window.location.origin + '/index.php/f' + titlePath;
+                                } else {
+                                    logDebug('Could not construct URL for recommendation link');
+                                    return;
+                                }
+                            }
+                            
+                            if (url && url !== window.location.href) {
+                                window.open(url, '_blank');
+                            }
                         }
-                    });
+                    }, true); // Use capture phase
                 }
             });
             
