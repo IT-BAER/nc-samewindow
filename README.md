@@ -18,9 +18,17 @@ The Same Window App automatically modifies links on frontend Widgets to open in 
 Users can still open links in new Windows/Tabs by using:
 - **Middle Mouse Button** click
 
-## Development
-
-### Requirements
+## Requirements
 
 - Nextcloud 28.0 or higher
 
+## Support Development
+
+If you find this app useful, consider supporting this and future developments, which heavily relies on coffee:
+
+<a href="https://www.buymeacoffee.com/itbaer" target="_blank"><img src="https://github.com/user-attachments/assets/64107f03-ba5b-473e-b8ad-f3696fe06002" alt="Buy Me A Coffee" style="height: 60px !important;max-width: 217px !important;" ></a>
+
+
+## License
+
+This project is licensed under the [AGPL-3.0-or-later](LICENSE) license.
