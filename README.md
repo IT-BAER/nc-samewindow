@@ -1,4 +1,4 @@
-# Same Window
+# Same Window (nc-samewindow)
 
 A Nextcloud app that prevents links on frontend widgets from opening in new windows/tabs, providing a more seamless user experience.
 
