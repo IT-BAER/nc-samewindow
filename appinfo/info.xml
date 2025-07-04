@@ -24,7 +24,7 @@ Features:
     <repository type="git">https://github.com/nextcloud/samewindow.git</repository>
     <screenshot>https://raw.githubusercontent.com/nextcloud/samewindow/main/screenshots/screenshot1.png</screenshot>
     <dependencies>
-        <nextcloud min-version="28" max-version="30"/>
+        <nextcloud min-version="28" max-version="31"/>
     </dependencies>
     <settings>
         <admin>OCA\SameWindow\Settings\Admin</admin>
