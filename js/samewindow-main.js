@@ -27,50 +27,15 @@
         return;
     }
 
-    let config = {
+    // App is always enabled with default configuration
+    const config = {
         enabled: true,
         targetSelectors: 'a[target="_blank"], a[target="_new"]',
         excludeSelectors: '.external-link, .new-window-link'
     };
 
-    // Load configuration from server
-    function loadConfig() {
-        // First try the regular web API (more compatible)
-        return fetch(OC.generateUrl('/apps/samewindow/config'), {
-            method: 'GET',
-            headers: {
-                'requesttoken': OC.requestToken,
-                'Accept': 'application/json'
-            }
-        })
-        .then(response => {
-            if (!response.ok) {
-                throw new Error('Server returned ' + response.status);
-            }
-            return response.json();
-        })
-        .then(data => {
-            console.debug('SameWindow: Loaded configuration:', data);
-            config = {
-                enabled: data.enabled || false,
-                targetSelectors: data.target_selectors || 'a[target="_blank"], a[target="_new"]',
-                excludeSelectors: data.exclude_selectors || '.external-link, .new-window-link'
-            };
-            return config;
-        })
-        .catch(error => {
-            console.warn('SameWindow: Error loading config via regular API:', error);
-            console.warn('SameWindow: Continuing with default config');
-            return config;
-        });
-    }
-
     // Function to modify links
     function modifyLinks() {
-        if (!config.enabled) {
-            return;
-        }
-
         try {
             // Find all links that match the target selectors
             const targetLinks = document.querySelectorAll(config.targetSelectors);
@@ -166,26 +131,19 @@
     // Initialize the app
     function init() {
         try {
-            // Load configuration first
-            loadConfig().then(() => {
-                if (config.enabled) {
-                    // Process existing links
-                    modifyLinks();
-                    
-                    // Set up observer for dynamic content
-                    setupObserver();
-                    
-                    // Process links when widgets are loaded
-                    document.addEventListener('DOMContentLoaded', modifyLinks);
-                    
-                    // Also process after a short delay for dynamic content
-                    setTimeout(modifyLinks, 1000);
-                    
-                    console.log('SameWindow: Initialized successfully');
-                } else {
-                    console.log('SameWindow: Disabled in configuration');
-                }
-            });
+            // Process existing links
+            modifyLinks();
+            
+            // Set up observer for dynamic content
+            setupObserver();
+            
+            // Process links when widgets are loaded
+            document.addEventListener('DOMContentLoaded', modifyLinks);
+            
+            // Also process after a short delay for dynamic content
+            setTimeout(modifyLinks, 1000);
+            
+            console.log('SameWindow: Initialized successfully');
         } catch (error) {
             console.error('SameWindow: Error during initialization:', error);
         }
@@ -201,7 +159,6 @@
     // Expose for debugging
     window.SameWindow = {
         config: config,
-        modifyLinks: modifyLinks,
-        loadConfig: loadConfig
+        modifyLinks: modifyLinks
     };
 })();

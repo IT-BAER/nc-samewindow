@@ -25,15 +25,12 @@ declare(strict_types=1);
 namespace OCA\SameWindow\AppInfo;
 
 use OCA\SameWindow\Controller\ConfigController;
-use OCA\SameWindow\Controller\L10NController;
 use OCA\SameWindow\Listener\LoadAdditionalScriptsListener;
 use OCP\AppFramework\App;
 use OCP\AppFramework\Bootstrap\IBootContext;
 use OCP\AppFramework\Bootstrap\IBootstrap;
 use OCP\AppFramework\Bootstrap\IRegistrationContext;
 use OCP\AppFramework\Http\Events\BeforeTemplateRenderedEvent;
-use OCP\IConfig;
-use OCP\IL10N;
 use OCP\IRequest;
 
 class Application extends App implements IBootstrap {
@@ -47,22 +44,16 @@ class Application extends App implements IBootstrap {
         // Register event listener for scripts
         $context->registerEventListener(BeforeTemplateRenderedEvent::class, LoadAdditionalScriptsListener::class);
 
-        // Register controllers as services
+        // Register config controller for API access
         $context->registerService('OCA\SameWindow\Controller\ConfigController', function($c) {
             return new ConfigController(
                 $c->get('AppName'),
-                $c->get(IRequest::class),
-                $c->get(IConfig::class)
+                $c->get(IRequest::class)
             );
         });
 
-        $context->registerService('OCA\SameWindow\Controller\L10NController', function($c) {
-            return new L10NController(
-                $c->get('AppName'),
-                $c->get(IRequest::class),
-                $c->get(IL10N::class)
-            );
-        });
+        // Load scripts
+        \OCP\Util::addScript(self::APP_ID, 'samewindow');
     }
 
     public function boot(IBootContext $context): void {

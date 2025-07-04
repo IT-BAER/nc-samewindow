@@ -28,15 +28,9 @@ use OCA\SameWindow\AppInfo\Application;
 use OCP\AppFramework\Http\Events\BeforeTemplateRenderedEvent;
 use OCP\EventDispatcher\Event;
 use OCP\EventDispatcher\IEventListener;
-use OCP\IConfig;
 use OCP\Util;
 
 class LoadAdditionalScriptsListener implements IEventListener {
-
-    public function __construct(
-        private IConfig $config,
-    ) {
-    }
 
     public function handle(Event $event): void {
         if (!$event instanceof BeforeTemplateRenderedEvent) {
@@ -48,12 +42,7 @@ class LoadAdditionalScriptsListener implements IEventListener {
             return;
         }
 
-        // Check if the app is enabled
-        if (!$this->config->getAppValue(Application::APP_ID, 'enabled', 'no') === 'yes') {
-            return;
-        }
-
-        // Load the JavaScript that will modify links
+        // App is always enabled, load the JavaScript that will modify links
         Util::addScript(Application::APP_ID, 'samewindow-main');
     }
 }

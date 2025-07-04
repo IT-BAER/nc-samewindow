@@ -9,7 +9,6 @@ The Same Window app ensures that all links on frontend widgets open in the same 
 
 Features:
 - Automatically modifies links to open in the same window
-- Configurable via admin settings
 - Supports dynamic content through mutation observers
 - Compatible with the latest Nextcloud versions
     ]]></description>
@@ -26,8 +25,4 @@ Features:
     <dependencies>
         <nextcloud min-version="28" max-version="31"/>
     </dependencies>
-    <settings>
-        <admin>OCA\SameWindow\Settings\Admin</admin>
-        <admin-section>OCA\SameWindow\Settings\AdminSection</admin-section>
-    </settings>
 </info>
