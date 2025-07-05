@@ -1,4 +1,4 @@
-<img align="right" src="https://g.it-baer.net/baer/nc-samewindow/raw/commit/a439c2983cc481fa0948d669374663f20b8c7b18/nc-samewindow-icon.png" alt="logo" width="150">
+<img align="right" src="https://raw.githubusercontent.com/IT-BAER/nc-samewindow/refs/heads/main/nc-samewindow-icon.png" alt="logo" width="150">
 
 # Same Window
 A Nextcloud App/Modification that prevents links on frontend Widgets from opening in new Windows/Tabs, providing a more seamless user experience.
