@@ -1,4 +1,9 @@
-## [1.0.0] - 2025-07-04
+## [1.0.1] - 2025-07-10
+
+### Fixed
+- Fixed Screenshot URL in appinfo.xml
+
+## [1.0.1] - 2025-07-04
 
 ### Added
 - Initial stable release of the Same Window App
