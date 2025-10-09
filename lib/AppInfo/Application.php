@@ -41,9 +41,6 @@ class Application extends App implements IBootstrap {
     public function register(IRegistrationContext $context): void {
         // Register event listener for scripts
         $context->registerEventListener(BeforeTemplateRenderedEvent::class, LoadAdditionalScriptsListener::class);
-
-        // Load scripts - do this here to ensure it's loaded after the page is rendered
-        \OCP\Util::addScript(self::APP_ID, 'samewindow-main');
     }
 
     public function boot(IBootContext $context): void {

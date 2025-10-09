@@ -54,7 +54,12 @@
             '.api-dashboard-widget-item',
             '.panel', // Panel widgets
             '.panel-content', // Panel content areas
-            '.recommendation' // Recommendation widgets
+            '.recommendation', // Recommendation widgets
+            '.dashboard__widget',
+            '.dashboard-grid',
+            '[data-dashboard-widget]',
+            '[data-widget-id]',
+            '[data-region="dashboard-content"]'
         ],
         // Links that should be modified
         targetSelectors: 'a[target="_blank"], a[target="_new"], a.recommendation, a[class*="recommendation"]',
@@ -71,9 +76,76 @@
             '#header', 
             '.header',
             '#appmenu',
-            '.app-menu'
+            '.app-menu',
+            '[data-navigation]'
         ]
     };
+
+    function normalizeToAbsoluteUrl(url) {
+        if (!url) {
+            return url;
+        }
+
+        try {
+            return new URL(url, window.location.origin).toString();
+        } catch (error) {
+            logDebug('Failed to normalize URL', url, error);
+            return url;
+        }
+    }
+
+    function generateUrl(path, params = {}) {
+        const normalizedPath = path.startsWith('/') ? path : `/${path}`;
+
+        if (typeof OC !== 'undefined' && typeof OC.generateUrl === 'function') {
+            try {
+                const generated = OC.generateUrl(normalizedPath, params);
+                return normalizeToAbsoluteUrl(generated);
+            } catch (error) {
+                logDebug('Failed to generate URL via OC.generateUrl', { path: normalizedPath, params, error });
+            }
+        }
+
+        const basePath = (typeof OC !== 'undefined' && typeof OC.webroot === 'string') ? OC.webroot : '';
+        const queryString = new URLSearchParams(params).toString();
+        const formattedQuery = queryString ? `?${queryString}` : '';
+
+        return `${window.location.origin}${basePath}${normalizedPath}${formattedQuery}`;
+    }
+
+    function extractFileId(link) {
+        const datasetCandidates = [
+            link.dataset?.fileId,
+            link.dataset?.fileid,
+            link.dataset?.nodeId,
+            link.dataset?.nodeid,
+            link.dataset?.id
+        ];
+
+        for (const candidate of datasetCandidates) {
+            if (candidate && /^\d+$/.test(candidate)) {
+                return candidate;
+            }
+        }
+
+        const attributeCandidates = ['data-fileid', 'data-file-id', 'data-node-id', 'data-nodeid', 'data-id'];
+        for (const attr of attributeCandidates) {
+            const value = link.getAttribute(attr);
+            if (value && /^\d+$/.test(value)) {
+                return value;
+            }
+        }
+
+        const ariaDescribedBy = link.getAttribute('aria-describedby');
+        if (ariaDescribedBy) {
+            const match = ariaDescribedBy.match(/recommendation-description-(\d+)/);
+            if (match) {
+                return match[1];
+            }
+        }
+
+        return null;
+    }
 
     // Function to construct URL for recommendation links
     function constructRecommendationUrl(link) {
@@ -86,28 +158,29 @@
             'className': link.className
         });
         
-        // Try to extract file ID from aria-describedby attribute
-        const ariaDescribedBy = link.getAttribute('aria-describedby');
-        if (ariaDescribedBy) {
-            const match = ariaDescribedBy.match(/recommendation-description-(\d+)/);
-            if (match) {
-                const fileId = match[1];
-                // Construct proper Nextcloud file URL
-                const url = `${window.location.origin}/index.php/apps/files/files/${fileId}?dir=/&openfile=true`;
-                logDebug('Constructed URL from file ID:', url);
-                return url;
-            }
+        const fileId = extractFileId(link);
+        if (fileId) {
+            const url = generateUrl(`/apps/files/files/${fileId}`, { dir: '/', openfile: 'true' });
+            logDebug('Constructed URL from file ID/dataset:', url);
+            return url;
         }
-        
+
         // Fallback: try to use original title if available
         const originalTitle = link.getAttribute('data-original-title') || link.getAttribute('title');
         if (originalTitle && originalTitle.startsWith('/')) {
             const cleanTitle = originalTitle.split(' - ')[0]; // Remove our tooltip text
-            const url = `${window.location.origin}/index.php/f${cleanTitle}`;
+            const url = generateUrl(`/f${cleanTitle}`);
             logDebug('Constructed URL from title:', url);
             return url;
         }
         
+        const href = link.getAttribute('href');
+        if (href) {
+            const normalizedHref = normalizeToAbsoluteUrl(href);
+            logDebug('Falling back to link href', normalizedHref);
+            return normalizedHref;
+        }
+
         logDebug('Could not construct URL for recommendation link');
         return null;
     }
@@ -127,6 +200,12 @@
                 logDebug('Element is inside excluded container', selector, parent);
                 return true;
             }
+        }
+
+        const navigationContainer = element.closest('[role="navigation"], nav, [data-navigation]');
+        if (navigationContainer) {
+            logDebug('Element is inside navigation container', navigationContainer);
+            return true;
         }
         return false;
     }
@@ -290,17 +369,18 @@
                                     return;
                                 }
                             }
+                            const normalizedUrl = normalizeToAbsoluteUrl(url);
                             
                             // Open in new tab/window based on modifier key
-                            if (url && url !== window.location.href) {
+                            if (normalizedUrl && normalizedUrl !== window.location.href) {
                                 if (e.shiftKey) {
                                     // Shift+click opens in new window
                                     logDebug('Opening in new window (Shift+click)');
-                                    window.open(url, '_blank', 'noopener,noreferrer');
+                                    window.open(normalizedUrl, '_blank', 'noopener,noreferrer');
                                 } else {
                                     // Ctrl/Cmd+click or middle click opens in new tab
                                     logDebug('Opening in new tab (Ctrl/Cmd+click or middle click)');
-                                    window.open(url, '_blank');
+                                    window.open(normalizedUrl, '_blank');
                                 }
                             }
                             return;
@@ -331,9 +411,11 @@
                                     return;
                                 }
                             }
-                            
-                            if (url && url !== window.location.href) {
-                                window.open(url, '_blank');
+
+                            const normalizedUrl = normalizeToAbsoluteUrl(url);
+
+                            if (normalizedUrl && normalizedUrl !== window.location.href) {
+                                window.open(normalizedUrl, '_blank');
                             }
                         }
                     }, true); // Use capture phase

@@ -2,7 +2,7 @@
 
 <div align="center">
 
-![Nextcloud App Store Version](https://img.shields.io/badge/Nextcloud-28%2B-blue?logo=nextcloud&logoColor=white)
+![Nextcloud App Store Version](https://img.shields.io/badge/Nextcloud-28--32-blue?logo=nextcloud&logoColor=white)
 ![License](https://img.shields.io/github/license/it-baer/nc-samewindow?color=blue)
 ![GitHub stars](https://img.shields.io/github/stars/it-baer/nc-samewindow?style=social)
 
@@ -41,7 +41,7 @@ The Same Window app uses:
 
 ## 📋 Requirements
 
-- 📦 Nextcloud 28, 29, 30 or 31
+- 📦 Nextcloud 28, 29, 30, 31 or 32
 
 ## 💜 Support Development
 

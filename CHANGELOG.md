@@ -1,3 +1,12 @@
+## [1.0.2] - 2025-10-09
+
+### Added
+- Verified compatibility with Nextcloud 32 
+
+### Changed
+- Improved widget detection and recommendation link handling for updated dashboard markup
+- Normalized generated URLs to support sub-directory installations on newer server versions
+
 ## [1.0.1] - 2025-07-10
 
 ### Fixed

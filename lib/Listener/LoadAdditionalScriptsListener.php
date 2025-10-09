@@ -38,7 +38,8 @@ class LoadAdditionalScriptsListener implements IEventListener {
         }
 
         // Only load on user pages, not on login or public pages
-        if ($event->getResponse()->getRenderAs() !== 'user') {
+        $renderAs = $event->getResponse()->getRenderAs();
+        if (!in_array($renderAs, ['user', 'embedded'], true)) {
             return;
         }
 
