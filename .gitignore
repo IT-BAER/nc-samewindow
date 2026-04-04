@@ -1,9 +1,6 @@
 # Nextcloud App .gitignore
 .nextcloud/
 
-# GitHub related files
-.github/
-
 # Composer dependencies
 /vendor/
 /composer.lock

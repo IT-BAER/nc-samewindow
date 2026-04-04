@@ -380,7 +380,7 @@
                                 } else {
                                     // Ctrl/Cmd+click or middle click opens in new tab
                                     logDebug('Opening in new tab (Ctrl/Cmd+click or middle click)');
-                                    window.open(normalizedUrl, '_blank');
+                                    window.open(normalizedUrl, '_blank', 'noopener,noreferrer');
                                 }
                             }
                             return;
@@ -415,7 +415,7 @@
                             const normalizedUrl = normalizeToAbsoluteUrl(url);
 
                             if (normalizedUrl && normalizedUrl !== window.location.href) {
-                                window.open(normalizedUrl, '_blank');
+                                window.open(normalizedUrl, '_blank', 'noopener,noreferrer');
                             }
                         }
                     }, true); // Use capture phase

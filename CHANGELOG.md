@@ -1,3 +1,15 @@
+## [1.0.3] - 2026-04-04
+
+### Added
+- Compatibility with Nextcloud 33
+- GitHub Actions release workflow (build, sign, publish to App Store)
+
+### Changed
+- Updated `<licence>` tag to SPDX format `AGPL-3.0-or-later` (required for NC 31+)
+
+### Fixed
+- Security: `window.open` calls for Ctrl/Cmd+click and middle-click now include `noopener,noreferrer` to prevent reverse tabnapping
+
 ## [1.0.2] - 2025-10-09
 
 ### Added
