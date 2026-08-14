@@ -1,3 +1,8 @@
+## [1.0.4] - 2026-08-14
+
+### Added
+- Compatibility with Nextcloud 34
+
 ## [1.0.3] - 2026-04-04
 
 ### Added
