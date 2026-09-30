@@ -41,7 +41,7 @@ The Same Window app uses:
 
 ## 📋 Requirements
 
-- 📦 Nextcloud 28, 29, 30, 31 or 32
+- 📦 Nextcloud 28 to 35
 
 ## 💜 Support Development
 
